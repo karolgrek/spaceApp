@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:space_app/ui/widgets/object_card.dart';
 import 'package:space_app/ui/widgets/search_bar.dart';
 
 class NotebookScreen extends StatelessWidget {
@@ -13,6 +14,7 @@ class NotebookScreen extends StatelessWidget {
           const SearchBarWidget(),
           Expanded(
             child: GridView.builder(
+              physics: const BouncingScrollPhysics(),
               padding: const EdgeInsets.all(16.0),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
@@ -21,7 +23,7 @@ class NotebookScreen extends StatelessWidget {
               ),
               itemCount: 10,
               itemBuilder: (context, index) {
-                return const Placeholder();
+                return const ObjectCard();
               },
             ),
           ),
