@@ -9,7 +9,7 @@ class SearchBarWidget extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       child: TextField(
         decoration: InputDecoration(
-          hintText: "Search your favorite space object",
+          hintText: "Search your space objects",
           prefixIcon: Icon(Icons.search),
         ),
       ),
