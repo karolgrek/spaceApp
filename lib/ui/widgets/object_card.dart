@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:space_app/models/space_object.dart';
 
 class ObjectCard extends StatelessWidget {
-  const ObjectCard({super.key});
+  final SpaceObject spaceobject;
+  const ObjectCard({super.key, required this.spaceobject});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +28,7 @@ class ObjectCard extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 8.0, top: 8.0, right: 8.0),
             child: Text(
-              'Mars',
+              spaceobject.name,
               style: Theme.of(
                 context,
               ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
@@ -38,7 +40,17 @@ class ObjectCard extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 8.0, bottom: 8.0, right: 8.0),
             child: Text(
-              'The Red Planet, fourth from the Sun.',
+              spaceobject.category,
+              style: Theme.of(context).textTheme.bodySmall,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.only(left: 8.0, bottom: 8.0, right: 8.0),
+            child: Text(
+              spaceobject.description,
               style: Theme.of(context).textTheme.bodySmall,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,

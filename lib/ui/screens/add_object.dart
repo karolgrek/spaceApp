@@ -32,7 +32,7 @@ class AddNewObject extends StatelessWidget {
             decoration: InputDecoration(
               labelText: "Space object name",
               hintText:
-                  "Andromeda Galaxy / Earth C-137 / Asgard - the home of Thor ",
+                  "Andromeda Galaxy / Earth C-137 / Asgard - home of Thor",
             ),
           ),
           const SizedBox(height: 16),

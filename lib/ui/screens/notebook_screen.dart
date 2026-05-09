@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:space_app/providers/space_object_provider.dart';
 import 'package:space_app/ui/widgets/add_object_button.dart';
 import 'package:space_app/ui/widgets/object_card.dart';
 import 'package:space_app/ui/widgets/search_bar.dart';
 
-class NotebookScreen extends StatelessWidget {
+class NotebookScreen extends ConsumerWidget {
   const NotebookScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final spaceObjectsList = ref.watch(spaceObjectsProvider);
     return Scaffold(
       appBar: AppBar(title: const Text("My Space Objects")),
       body: Column(
@@ -34,9 +37,10 @@ class NotebookScreen extends StatelessWidget {
                 mainAxisSpacing: 16,
                 crossAxisSpacing: 16,
               ),
-              itemCount: 10,
+              itemCount: spaceObjectsList.length,
               itemBuilder: (context, index) {
-                return const ObjectCard();
+                final currentObject = spaceObjectsList[index];
+                return ObjectCard(spaceobject: currentObject);
               },
             ),
           ),
