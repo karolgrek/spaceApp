@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:space_app/models/space_object.dart';
 import 'package:space_app/providers/space_object_provider.dart';
+import 'package:space_app/ui/screens/add_object_screen.dart';
 
 class ObjectActionButtons extends ConsumerWidget {
   final SpaceObject spaceobject;
@@ -15,12 +16,20 @@ class ObjectActionButtons extends ConsumerWidget {
         padding: const EdgeInsets.all(16.0),
         child: Row(
           children: [
-            // TODO :EDIT BUTTON
+            // EDIT BUTTON
             Expanded(
               child: ElevatedButton.icon(
                 icon: const Icon(Icons.edit),
                 label: const Text("EDIT"),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          AddNewObject(objectToEdit: spaceobject),
+                    ),
+                  );
+                },
               ),
             ),
             const SizedBox(width: 16),

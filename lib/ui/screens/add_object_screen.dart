@@ -5,7 +5,8 @@ import 'package:space_app/providers/space_object_provider.dart';
 import 'package:space_app/ui/widgets/space_object_builder.dart';
 
 class AddNewObject extends ConsumerStatefulWidget {
-  const AddNewObject({super.key});
+  final SpaceObject? objectToEdit;
+  const AddNewObject({super.key, this.objectToEdit});
 
   @override
   ConsumerState<AddNewObject> createState() => _AddNewObjectState();
@@ -28,6 +29,17 @@ class _AddNewObjectState extends ConsumerState<AddNewObject> {
   final _descriptionController = TextEditingController();
   final _notesController = TextEditingController();
   @override
+  void initState() {
+    super.initState();
+    if (widget.objectToEdit != null) {
+      _nameController.text = widget.objectToEdit!.name;
+      _selectedCategory = widget.objectToEdit!.category;
+      _descriptionController.text = widget.objectToEdit!.description;
+      _notesController.text = widget.objectToEdit!.notes;
+    }
+  }
+
+  @override
   void dispose() {
     _nameController.dispose();
     _descriptionController.dispose();
@@ -37,6 +49,46 @@ class _AddNewObjectState extends ConsumerState<AddNewObject> {
 
   @override
   Widget build(BuildContext context) {
+    void saveObject() {
+      final name = _nameController.text.trim();
+      if (name.isEmpty || _selectedCategory == null) return;
+
+      final objectId =
+          widget.objectToEdit?.id ??
+          DateTime.now().millisecondsSinceEpoch.toString();
+      final imagePath = widget.objectToEdit?.imagePath ?? '';
+
+      final savedObject = SpaceObject(
+        id: objectId,
+        name: name,
+        category: _selectedCategory!,
+        description: _descriptionController.text.trim(),
+        imagePath: imagePath,
+        notes: _notesController.text.trim(),
+      );
+
+      if (widget.objectToEdit != null) {
+        ref.read(spaceObjectsProvider.notifier).updateObject(savedObject);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Object updated!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        Navigator.pop(context);
+        Navigator.pop(context);
+      } else {
+        ref.read(spaceObjectsProvider.notifier).addObject(savedObject);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('New object "$name" has been created.'),
+            backgroundColor: Colors.blue,
+          ),
+        );
+        Navigator.pop(context);
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(title: const Text("Add New Space Object")),
       body: ListView(
@@ -126,44 +178,51 @@ class _AddNewObjectState extends ConsumerState<AddNewObject> {
             ),
           ),
           const SizedBox(height: 32),
-          ElevatedButton(
-            onPressed: () {
-              final name = _nameController.text.trim();
-              if (name.isEmpty || _selectedCategory == null) {
-                return;
-              }
-              final newObject = SpaceObject(
-                id: DateTime.now().millisecondsSinceEpoch.toString(),
-                name: name,
-                category: _selectedCategory!,
-                description: _descriptionController.text.trim(),
-                imagePath: '',
-                notes: _notesController.text.trim(),
-              );
-              ref.read(spaceObjectsProvider.notifier).addObject(newObject);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('New object "$name" has been created.'),
-                  backgroundColor: Colors.green,
+
+          if (widget.objectToEdit != null)
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text("Cancel", style: TextStyle(fontSize: 18)),
+                  ),
                 ),
-              );
-              Navigator.pop(context);
-            },
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      backgroundColor: Colors.green,
+                    ),
+                    onPressed: () => saveObject(),
+                    child: const Text(
+                      "Save",
+                      style: TextStyle(fontSize: 18, color: Colors.white),
+                    ),
+                  ),
+                ),
+              ],
+            )
+          else
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                backgroundColor: Colors.blue,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              onPressed: () => saveObject(),
+              child: const Text(
+                "Add Object",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
             ),
-            child: const Text(
-              "Add Object",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-          ),
         ],
       ),
     );
