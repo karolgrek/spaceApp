@@ -29,7 +29,7 @@ class SpaceObjectAdapter extends TypeAdapter<SpaceObject> {
   @override
   void write(BinaryWriter writer, SpaceObject obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -39,7 +39,9 @@ class SpaceObjectAdapter extends TypeAdapter<SpaceObject> {
       ..writeByte(3)
       ..write(obj.description)
       ..writeByte(4)
-      ..write(obj.imagePath);
+      ..write(obj.imagePath)
+      ..writeByte(5)
+      ..write(obj.notes);
   }
 
   @override

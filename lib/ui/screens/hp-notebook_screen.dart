@@ -33,19 +33,29 @@ class NotebookScreen extends ConsumerWidget {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16.0,
-              vertical: 8.0,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 4),
             child: Row(
               children: [
                 const Expanded(child: SearchBarWidget()),
-                const SizedBox(width: 8),
                 IconButton(
                   icon: const Icon(Icons.filter_list),
                   onPressed: () {
                     _showFilterDialog(context, ref);
                   },
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const AddObjectButton(),
+                const SizedBox(width: 12),
+                const Text(
+                  "Add new space object",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                 ),
               ],
             ),
