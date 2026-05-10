@@ -7,6 +7,7 @@ class HiveService {
     Hive.registerAdapter(SpaceObjectAdapter());
 
     Box<SpaceObject> box = await Hive.openBox<SpaceObject>('space_objects');
+    await Hive.openBox('apod_cache');
 
     if (box.isEmpty) {
       await box.addAll([

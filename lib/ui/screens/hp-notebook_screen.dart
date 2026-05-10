@@ -5,6 +5,8 @@ import 'package:space_app/providers/space_object_provider.dart';
 import 'package:space_app/ui/widgets/add_new_object_button.dart';
 import 'package:space_app/ui/widgets/object_card.dart';
 import 'package:space_app/ui/widgets/search_bar.dart';
+import 'package:space_app/ui/screens/daily_picture_screen.dart';
+import 'package:space_app/ui/widgets/daily_picture_banner.dart';
 
 class NotebookScreen extends ConsumerWidget {
   const NotebookScreen({super.key});
@@ -32,6 +34,7 @@ class NotebookScreen extends ConsumerWidget {
       appBar: AppBar(title: const Text("My Space Objects")),
       body: Column(
         children: [
+          const DailyPictureBanner(),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4),
             child: Row(
