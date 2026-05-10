@@ -37,3 +37,5 @@ final spaceObjectsProvider =
     });
 
 final selectedCategoriesProvider = StateProvider<List<String>>((ref) => []);
+
+final searchQueryProvider = StateProvider<String>((ref) => '');

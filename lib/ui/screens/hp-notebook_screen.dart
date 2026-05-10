@@ -15,11 +15,14 @@ class NotebookScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final allObjects = ref.watch(spaceObjectsProvider);
     final selectedCategories = ref.watch(selectedCategoriesProvider);
-    final displayedObjects = selectedCategories.isEmpty
-        ? allObjects
-        : allObjects
-              .where((obj) => selectedCategories.contains(obj.category))
-              .toList();
+    final searchQuery = ref.watch(searchQueryProvider).toLowerCase();
+    final displayedObjects = allObjects.where((obj) {
+      final matchesCategory =
+          selectedCategories.isEmpty ||
+          selectedCategories.contains(obj.category);
+      final matchesSearch = obj.name.toLowerCase().contains(searchQuery);
+      return matchesCategory && matchesSearch;
+    }).toList();
 
     final Map<String, List<SpaceObject>> groupedObjects = {};
     for (var obj in displayedObjects) {
