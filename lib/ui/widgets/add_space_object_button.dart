@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:space_app/ui/screens/add_object.dart';
+import 'package:space_app/ui/screens/add_object_screen.dart';
 
 class AddObjectButton extends StatelessWidget {
   const AddObjectButton({super.key});

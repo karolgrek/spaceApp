@@ -14,6 +14,12 @@ class SpaceObjectsNotifier extends Notifier<List<SpaceObject>> {
     box.put(newObject.id, newObject);
     state = [...state, newObject];
   }
+
+  void deleteObject(String id) {
+    final box = Hive.box<SpaceObject>('space_objects');
+    box.delete(id);
+    state = state.where((obj) => obj.id != id).toList();
+  }
 }
 
 final spaceObjectsProvider =
