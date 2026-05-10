@@ -4,6 +4,7 @@ import 'package:space_app/models/space_object.dart';
 import 'package:space_app/providers/categories_provider.dart';
 import 'package:space_app/providers/space_object_provider.dart';
 import 'package:space_app/ui/widgets/space_object_builder.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AddNewObject extends ConsumerStatefulWidget {
   final SpaceObject? objectToEdit;
@@ -16,6 +17,7 @@ class AddNewObject extends ConsumerStatefulWidget {
 class _AddNewObjectState extends ConsumerState<AddNewObject> {
   final List<String> _categories = [];
   String? _selectedCategory;
+  String _selectedImagePath = '';
 
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
@@ -34,6 +36,7 @@ class _AddNewObjectState extends ConsumerState<AddNewObject> {
       _selectedCategory = widget.objectToEdit!.category;
       _descriptionController.text = widget.objectToEdit!.description;
       _notesController.text = widget.objectToEdit!.notes;
+      _selectedImagePath = widget.objectToEdit!.imagePath;
     }
   }
 
@@ -61,7 +64,7 @@ class _AddNewObjectState extends ConsumerState<AddNewObject> {
       final objectId =
           widget.objectToEdit?.id ??
           DateTime.now().millisecondsSinceEpoch.toString();
-      final imagePath = widget.objectToEdit?.imagePath ?? '';
+      final imagePath = _selectedImagePath;
 
       final savedObject = SpaceObject(
         id: objectId,
@@ -100,7 +103,17 @@ class _AddNewObjectState extends ConsumerState<AddNewObject> {
         padding: const EdgeInsets.all(16),
         children: [
           InkWell(
-            onTap: () {},
+            onTap: () async {
+              final ImagePicker picker = ImagePicker();
+              final XFile? image = await picker.pickImage(
+                source: ImageSource.gallery,
+              );
+              if (image != null) {
+                setState(() {
+                  _selectedImagePath = image.path;
+                });
+              }
+            },
             child: Container(
               height: 200,
               width: double.infinity,
@@ -113,7 +126,7 @@ class _AddNewObjectState extends ConsumerState<AddNewObject> {
                 fit: StackFit.expand,
                 children: [
                   SpaceObjectImage(
-                    imagePath: '',
+                    imagePath: _selectedImagePath,
                     category: _selectedCategory ?? '',
                   ),
                   Container(
@@ -128,7 +141,9 @@ class _AddNewObjectState extends ConsumerState<AddNewObject> {
                         ),
                         SizedBox(height: 8),
                         Text(
-                          "Tap to upload a photo",
+                          _selectedImagePath.isNotEmpty
+                              ? "Tap to change photo"
+                              : "Tap to upload a photo",
                           textAlign: TextAlign.center,
                           style: TextStyle(color: Colors.white70),
                         ),
