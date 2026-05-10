@@ -10,8 +10,8 @@ class ObjectCard extends StatelessWidget {
     return Card(
       clipBehavior: Clip.antiAlias,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Expanded(
             child: Container(
@@ -39,21 +39,14 @@ class ObjectCard extends StatelessWidget {
 
           Padding(
             padding: const EdgeInsets.only(left: 8.0, bottom: 8.0, right: 8.0),
-            child: Text(
-              spaceobject.category,
-              style: Theme.of(context).textTheme.bodySmall,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-
-          Padding(
-            padding: const EdgeInsets.only(left: 8.0, bottom: 8.0, right: 8.0),
-            child: Text(
-              spaceobject.description,
-              style: Theme.of(context).textTheme.bodySmall,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+            child: SizedBox(
+              height: 36,
+              child: Text(
+                spaceobject.description,
+                style: Theme.of(context).textTheme.bodySmall,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ),
         ],

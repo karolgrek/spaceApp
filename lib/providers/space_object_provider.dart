@@ -8,9 +8,17 @@ class SpaceObjectsNotifier extends Notifier<List<SpaceObject>> {
     final box = Hive.box<SpaceObject>('space_objects');
     return box.values.toList();
   }
+
+  void addObject(SpaceObject newObject) {
+    final box = Hive.box<SpaceObject>('space_objects');
+    box.put(newObject.id, newObject);
+    state = [...state, newObject];
+  }
 }
 
 final spaceObjectsProvider =
     NotifierProvider<SpaceObjectsNotifier, List<SpaceObject>>(() {
       return SpaceObjectsNotifier();
     });
+
+final selectedCategoriesProvider = StateProvider<List<String>>((ref) => []);

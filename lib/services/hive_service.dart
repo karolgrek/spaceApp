@@ -6,7 +6,7 @@ class HiveService {
     await Hive.initFlutter();
     Hive.registerAdapter(SpaceObjectAdapter());
 
-    var box = await Hive.openBox<SpaceObject>('space_objects');
+    Box<SpaceObject> box = await Hive.openBox<SpaceObject>('space_objects');
 
     if (box.isEmpty) {
       await box.addAll([
@@ -16,6 +16,7 @@ class HiveService {
           category: 'Star',
           description: 'The star around which the earth orbits.',
           imagePath: '',
+          notes: '',
         ),
         SpaceObject(
           id: '2',
@@ -23,6 +24,7 @@ class HiveService {
           category: 'Planet',
           description: 'The Red Planet, fourth from the Sun.',
           imagePath: '',
+          notes: '',
         ),
         SpaceObject(
           id: '3',
@@ -30,6 +32,7 @@ class HiveService {
           category: 'Galaxy',
           description: 'The nearest major galaxy to the Milky Way.',
           imagePath: '',
+          notes: '',
         ),
       ]);
     }

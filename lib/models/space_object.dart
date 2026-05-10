@@ -18,11 +18,15 @@ class SpaceObject extends HiveObject {
   @HiveField(4)
   final String imagePath;
 
+  @HiveField(5)
+  final String notes;
+
   SpaceObject({
     required this.id,
     required this.name,
     required this.category,
     required this.description,
     required this.imagePath,
+    required this.notes,
   });
 }

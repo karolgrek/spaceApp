@@ -22,6 +22,7 @@ class SpaceObjectAdapter extends TypeAdapter<SpaceObject> {
       category: fields[2] as String,
       description: fields[3] as String,
       imagePath: fields[4] as String,
+      notes: fields[5] as String,
     );
   }
 

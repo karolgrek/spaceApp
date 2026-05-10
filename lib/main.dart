@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:space_app/services/hive_service.dart';
 import 'package:space_app/utils/app_theme.dart';
-import 'package:space_app/ui/screens/notebook_screen.dart';
+import 'package:space_app/ui/screens/hp-notebook_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() async {
