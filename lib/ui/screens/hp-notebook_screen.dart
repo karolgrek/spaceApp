@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:space_app/models/space_object.dart';
 import 'package:space_app/providers/space_object_provider.dart';
+import 'package:space_app/providers/categories_provider.dart';
+import 'package:space_app/ui/screens/edit_categories_screen.dart';
 import 'package:space_app/ui/widgets/add_new_object_button.dart';
 import 'package:space_app/ui/widgets/object_card.dart';
 import 'package:space_app/ui/widgets/search_bar.dart';
@@ -34,7 +36,46 @@ class NotebookScreen extends ConsumerWidget {
     final categoriedObjects = groupedObjects.keys.toList();
 
     return Scaffold(
-      appBar: AppBar(title: const Text("My Space Objects")),
+      appBar: AppBar(
+        title: const Text("My Space Objects"),
+        actions: [
+          Builder(
+            builder: (context) => IconButton(
+              icon: const Icon(Icons.settings),
+              onPressed: () {
+                Scaffold.of(context).openEndDrawer(); // Otvorí pravý sidebar
+              },
+            ),
+          ),
+        ],
+      ),
+      endDrawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(color: Colors.deepPurple),
+              child: Text(
+                "Settings",
+                style: TextStyle(fontSize: 24, color: Colors.white),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.category),
+              title: const Text("Edit custom categories"),
+              onTap: () {
+                Navigator.pop(context); // Zavrie sidebar pred odchodom
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const EditCategoriesScreen(),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
       body: Column(
         children: [
           const DailyPictureBanner(),
@@ -109,15 +150,7 @@ class NotebookScreen extends ConsumerWidget {
 }
 
 void _showFilterDialog(BuildContext context, WidgetRef ref) {
-  final categories = [
-    'Planet',
-    'Star',
-    'Galaxy',
-    'Comet',
-    'Black Hole',
-    'Moon',
-    'Satellite',
-  ];
+  final categoriesList = ref.read(customCategoriesProvider).toList();
 
   showDialog(
     context: context,
@@ -131,9 +164,9 @@ void _showFilterDialog(BuildContext context, WidgetRef ref) {
               width: double.maxFinite,
               child: ListView.builder(
                 shrinkWrap: true,
-                itemCount: categories.length,
+                itemCount: categoriesList.length,
                 itemBuilder: (context, index) {
-                  final cat = categories[index];
+                  final cat = categoriesList[index];
                   final isChecked = selected.contains(cat);
 
                   return CheckboxListTile(

@@ -21,6 +21,15 @@ class SpaceObjectsNotifier extends Notifier<List<SpaceObject>> {
     state = state.where((obj) => obj.id != id).toList();
   }
 
+  void deleteObjectsByCategory(String category) {
+    final box = Hive.box<SpaceObject>('space_objects');
+    final objectsToDelete = state.where((obj) => obj.category == category).toList();
+    for (var obj in objectsToDelete) {
+      box.delete(obj.id);
+    }
+    state = state.where((obj) => obj.category != category).toList();
+  }
+
   void updateObject(SpaceObject updatedObject) {
     final box = Hive.box<SpaceObject>('space_objects');
     box.put(updatedObject.id, updatedObject);
@@ -29,6 +38,29 @@ class SpaceObjectsNotifier extends Notifier<List<SpaceObject>> {
         if (obj.id == updatedObject.id) updatedObject else obj,
     ];
   }
+  void updateCategoryForObjects(String oldCategory, String newCategory) {
+    final box = Hive.box<SpaceObject>('space_objects');
+    bool updated = false;
+    List<SpaceObject> newState = [...state];
+    for (int i = 0; i < newState.length; i++) {
+      if (newState[i].category == oldCategory) {
+        final updatedObj = SpaceObject(
+          id: newState[i].id,
+          name: newState[i].name,
+          category: newCategory,
+          description: newState[i].description,
+          imagePath: newState[i].imagePath,
+          notes: newState[i].notes,
+        );
+        box.put(updatedObj.id, updatedObj);
+        newState[i] = updatedObj;
+        updated = true;
+      }
+    }
+    if (updated) {
+      state = newState;
+    }
+  }
 }
 
 final spaceObjectsProvider =
@@ -36,6 +68,5 @@ final spaceObjectsProvider =
       return SpaceObjectsNotifier();
     });
 
-final selectedCategoriesProvider = StateProvider<List<String>>((ref) => []);
-
 final searchQueryProvider = StateProvider<String>((ref) => '');
+

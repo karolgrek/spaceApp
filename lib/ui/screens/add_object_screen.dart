@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:space_app/models/space_object.dart';
+import 'package:space_app/providers/categories_provider.dart';
 import 'package:space_app/providers/space_object_provider.dart';
 import 'package:space_app/ui/widgets/space_object_builder.dart';
 
@@ -13,24 +14,21 @@ class AddNewObject extends ConsumerStatefulWidget {
 }
 
 class _AddNewObjectState extends ConsumerState<AddNewObject> {
-  final List<String> _categories = [
-    'Planet',
-    'Star',
-    'Galaxy',
-    'Comet',
-    'Black Hole',
-    'Moon',
-    'Satellite',
-    'Custom...',
-  ];
+  final List<String> _categories = [];
   String? _selectedCategory;
 
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _notesController = TextEditingController();
+  final _customCategoryController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
+    final customCategories = ref.read(customCategoriesProvider);
+    _categories.clear();
+    _categories.addAll(customCategories);
+    _categories.add('Create custom...');
     if (widget.objectToEdit != null) {
       _nameController.text = widget.objectToEdit!.name;
       _selectedCategory = widget.objectToEdit!.category;
@@ -44,15 +42,22 @@ class _AddNewObjectState extends ConsumerState<AddNewObject> {
     _nameController.dispose();
     _descriptionController.dispose();
     _notesController.dispose();
+    _customCategoryController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     void saveObject() {
+      String newCategory = _selectedCategory!;
+      if (_selectedCategory == 'Create custom...') {
+        newCategory = _customCategoryController.text.trim();
+        if (newCategory.isEmpty) return;
+        ref.read(customCategoriesProvider.notifier).addCategory(newCategory);
+      }
+
       final name = _nameController.text.trim();
       if (name.isEmpty || _selectedCategory == null) return;
-
       final objectId =
           widget.objectToEdit?.id ??
           DateTime.now().millisecondsSinceEpoch.toString();
@@ -61,7 +66,7 @@ class _AddNewObjectState extends ConsumerState<AddNewObject> {
       final savedObject = SpaceObject(
         id: objectId,
         name: name,
-        category: _selectedCategory!,
+        category: newCategory,
         description: _descriptionController.text.trim(),
         imagePath: imagePath,
         notes: _notesController.text.trim(),
@@ -159,6 +164,17 @@ class _AddNewObjectState extends ConsumerState<AddNewObject> {
               });
             },
           ),
+
+          if (_selectedCategory == 'Create custom...') ...[
+            const SizedBox(height: 16),
+            TextField(
+              controller: _customCategoryController,
+              decoration: const InputDecoration(
+                labelText: "Enter custom category name",
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
           const SizedBox(height: 16),
           TextField(
             controller: _descriptionController,
@@ -167,14 +183,19 @@ class _AddNewObjectState extends ConsumerState<AddNewObject> {
             decoration: const InputDecoration(
               labelText: "Short Description",
               hintText: "Brief text for the home screen (max 100 chars)",
+              alignLabelWithHint: true,
             ),
           ),
           const SizedBox(height: 16),
           TextField(
             controller: _notesController,
+            minLines: 6,
+            maxLines: 6,
+            keyboardType: TextInputType.multiline,
             decoration: const InputDecoration(
               labelText: "Personal Notes",
               hintText: "Any notes?",
+              alignLabelWithHint: true,
             ),
           ),
           const SizedBox(height: 32),

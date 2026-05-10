@@ -1,12 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hive_flutter/hive_flutter.dart'; // Pridali sme Hive
+import 'package:hive_flutter/hive_flutter.dart';
 
 const String nasaApiUrl = 'https://api.nasa.gov/planetary/apod';
 final String nasaApiKey = dotenv.env['NASA_API_KEY'] ?? 'DEMO_KEY';
 
-// Vytvoríme si špeciálnu triedu pre chybu, ktorá v sebe nesie staré dáta
 class OfflineWithCacheException implements Exception {
   final Map<String, dynamic> cachedData;
   OfflineWithCacheException(this.cachedData);
