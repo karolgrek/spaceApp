@@ -60,6 +60,7 @@ class NotebookScreen extends ConsumerWidget {
               ],
             ),
           ),
+          const SizedBox(height: 16),
           Expanded(
             child: ListView.builder(
               physics: const BouncingScrollPhysics(),

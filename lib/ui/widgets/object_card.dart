@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:space_app/models/space_object.dart';
+import 'dart:io';
+
+import 'package:space_app/ui/widgets/space_object_builder.dart';
 
 class ObjectCard extends StatelessWidget {
   final SpaceObject spaceobject;
@@ -14,13 +17,11 @@ class ObjectCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Expanded(
-            child: Container(
+            child: SizedBox(
               width: double.infinity,
-              color: Colors.grey[800],
-              child: const Icon(
-                Icons.image_not_supported_outlined,
-                size: 40,
-                color: Colors.grey,
+              child: SpaceObjectImage(
+                imagePath: spaceobject.imagePath,
+                category: spaceobject.category,
               ),
             ),
           ),
@@ -51,6 +52,43 @@ class ObjectCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildImageWidget() {
+    // Ak nie je žiadna cesta, ukáž ikonu
+    if (spaceobject.imagePath.isEmpty) {
+      return Container(
+        color: Colors.grey[800],
+        child: const Icon(
+          Icons.image_not_supported_outlined,
+          size: 40,
+          color: Colors.grey,
+        ),
+      );
+    }
+
+    // Skús načítať ako súbor (ak má cestu, ktorú sme si vybrali)
+    final file = File(spaceobject.imagePath);
+    if (file.existsSync()) {
+      return Image.file(file, width: double.infinity, fit: BoxFit.cover);
+    }
+
+    // Skús načítať ako asset (pre štandardné obrázky, ak by sme ich pridali neskôr)
+    return Image.asset(
+      spaceobject.imagePath,
+      width: double.infinity,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) {
+        return Container(
+          color: Colors.grey[800],
+          child: const Icon(
+            Icons.image_not_supported_outlined,
+            size: 40,
+            color: Colors.grey,
+          ),
+        );
+      },
     );
   }
 }

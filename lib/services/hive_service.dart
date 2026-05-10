@@ -15,7 +15,7 @@ class HiveService {
           name: 'Sun',
           category: 'Star',
           description: 'The star around which the earth orbits.',
-          imagePath: '',
+          imagePath: 'assets/images/star.png',
           notes: '',
         ),
         SpaceObject(
@@ -23,7 +23,7 @@ class HiveService {
           name: 'Mars',
           category: 'Planet',
           description: 'The Red Planet, fourth from the Sun.',
-          imagePath: '',
+          imagePath: 'assets/images/planet.png',
           notes: '',
         ),
         SpaceObject(
@@ -31,7 +31,7 @@ class HiveService {
           name: 'Andromeda',
           category: 'Galaxy',
           description: 'The nearest major galaxy to the Milky Way.',
-          imagePath: '',
+          imagePath: 'assets/images/galaxy.png',
           notes: '',
         ),
       ]);
