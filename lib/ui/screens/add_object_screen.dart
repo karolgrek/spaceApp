@@ -78,8 +78,8 @@ class _AddNewObjectState extends ConsumerState<AddNewObject> {
       if (widget.objectToEdit != null) {
         ref.read(spaceObjectsProvider.notifier).updateObject(savedObject);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Object updated!'),
+          SnackBar(
+            content: Text('Object "$name" was updated!'),
             backgroundColor: Colors.green,
           ),
         );
