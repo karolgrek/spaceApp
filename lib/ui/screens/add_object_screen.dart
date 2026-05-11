@@ -183,6 +183,7 @@ class _AddNewObjectState extends ConsumerState<AddNewObject> {
           if (_selectedCategory == 'Create custom...') ...[
             const SizedBox(height: 16),
             TextField(
+              autofocus: true,
               controller: _customCategoryController,
               decoration: const InputDecoration(
                 labelText: "Enter custom category name",
