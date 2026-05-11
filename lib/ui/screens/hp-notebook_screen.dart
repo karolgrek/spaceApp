@@ -44,7 +44,7 @@ class NotebookScreen extends ConsumerWidget {
             builder: (context) => IconButton(
               icon: const Icon(Icons.settings),
               onPressed: () {
-                Scaffold.of(context).openEndDrawer(); // Otvorí pravý sidebar
+                Scaffold.of(context).openEndDrawer();
               },
             ),
           ),
@@ -66,20 +66,20 @@ class NotebookScreen extends ConsumerWidget {
                 ),
               ),
               ListTile(
-              leading: const Icon(Icons.category),
-              title: const Text("Edit custom categories"),
-              onTap: () {
-                Navigator.pop(context); // Zavrie sidebar pred odchodom
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const EditCategoriesScreen(),
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
+                leading: const Icon(Icons.category),
+                title: const Text("Edit custom categories"),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const EditCategoriesScreen(),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
       body: Column(

@@ -9,9 +9,16 @@ class EditCategoriesScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final baseCategories = [
-      'Planet', 'Star', 'Galaxy', 'Comet', 'Black Hole', 'Moon', 'Satellite'
+      'Planet',
+      'Star',
+      'Galaxy',
+      'Comet',
+      'Black Hole',
+      'Moon',
+      'Satellite',
     ];
-    final customCategories = ref.watch(customCategoriesProvider)
+    final customCategories = ref
+        .watch(customCategoriesProvider)
         .where((c) => !baseCategories.contains(c))
         .toList();
 
@@ -112,7 +119,9 @@ class EditCategoriesScreen extends ConsumerWidget {
                       .updateCategoryName(oldCategory, newName);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text("Category '$oldCategory' was updated to '$newName'."),
+                      content: Text(
+                        "Category '$oldCategory' was updated to '$newName'.",
+                      ),
                       backgroundColor: Colors.blueAccent,
                     ),
                   );

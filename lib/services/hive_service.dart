@@ -10,6 +10,7 @@ class HiveService {
     await Hive.openBox('apod_cache');
     await Hive.openBox<String>('custom_categories');
 
+    // Seeding initial data for the first launch
     if (box.isEmpty) {
       await box.addAll([
         SpaceObject(

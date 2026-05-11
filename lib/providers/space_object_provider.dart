@@ -23,7 +23,9 @@ class SpaceObjectsNotifier extends Notifier<List<SpaceObject>> {
 
   void deleteObjectsByCategory(String category) {
     final box = Hive.box<SpaceObject>('space_objects');
-    final objectsToDelete = state.where((obj) => obj.category == category).toList();
+    final objectsToDelete = state
+        .where((obj) => obj.category == category)
+        .toList();
     for (var obj in objectsToDelete) {
       box.delete(obj.id);
     }
@@ -38,6 +40,9 @@ class SpaceObjectsNotifier extends Notifier<List<SpaceObject>> {
         if (obj.id == updatedObject.id) updatedObject else obj,
     ];
   }
+
+  /// Updates category name for all object that belionged to old category
+  /// Used when a custom category is renamed.
   void updateCategoryForObjects(String oldCategory, String newCategory) {
     final box = Hive.box<SpaceObject>('space_objects');
     bool updated = false;
@@ -69,4 +74,3 @@ final spaceObjectsProvider =
     });
 
 final searchQueryProvider = StateProvider<String>((ref) => '');
-
