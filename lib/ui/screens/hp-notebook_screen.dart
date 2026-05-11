@@ -9,6 +9,7 @@ import 'package:space_app/ui/widgets/object_card.dart';
 import 'package:space_app/ui/widgets/search_bar.dart';
 import 'package:space_app/ui/screens/daily_picture_screen.dart';
 import 'package:space_app/ui/widgets/daily_picture_banner.dart';
+import 'package:space_app/ui/widgets/starry_background.dart';
 
 class NotebookScreen extends ConsumerWidget {
   const NotebookScreen({super.key});
@@ -50,17 +51,21 @@ class NotebookScreen extends ConsumerWidget {
         ],
       ),
       endDrawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(color: Colors.deepPurple),
-              child: Text(
-                "Settings",
-                style: TextStyle(fontSize: 24, color: Colors.white),
+        backgroundColor: Colors.transparent,
+        child: StarryBackground(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              const DrawerHeader(
+                decoration: BoxDecoration(
+                  border: Border(bottom: BorderSide(color: Colors.white24)),
+                ),
+                child: Text(
+                  "Settings",
+                  style: TextStyle(fontSize: 24, color: Colors.white),
+                ),
               ),
-            ),
-            ListTile(
+              ListTile(
               leading: const Icon(Icons.category),
               title: const Text("Edit custom categories"),
               onTap: () {
@@ -74,6 +79,7 @@ class NotebookScreen extends ConsumerWidget {
               },
             ),
           ],
+        ),
         ),
       ),
       body: Column(
