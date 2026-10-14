@@ -61,7 +61,7 @@ class HiveService {
           category: 'Black Hole',
           description:
               'The supermassive black hole at the Galactic Center of the Milky Way.',
-          imagePath: 'assets/images/black_hole.png',
+          imagePath: 'assets/images/blackhole.png',
           notes: '',
         ),
         SpaceObject(

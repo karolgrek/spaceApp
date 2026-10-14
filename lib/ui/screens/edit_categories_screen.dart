@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:space_app/providers/categories_provider.dart';
-import 'package:space_app/ui/widgets/category_tile.dart';
+import 'package:space_app/ui/widgets/category/category_tile.dart';
 
 class EditCategoriesScreen extends ConsumerWidget {
   const EditCategoriesScreen({super.key});

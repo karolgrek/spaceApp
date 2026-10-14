@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:space_app/models/space_object.dart';
-import 'package:space_app/ui/widgets/object_detail_buttons.dart';
-import 'package:space_app/ui/widgets/space_object_builder.dart';
+import 'package:space_app/ui/widgets/buttons/object_detail_buttons.dart';
+import 'package:space_app/ui/widgets/object/space_object_builder.dart';
 
 class ObjectDetailScreen extends ConsumerWidget {
   final SpaceObject spaceobject;

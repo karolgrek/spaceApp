@@ -3,7 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:space_app/models/space_object.dart';
 import 'package:space_app/providers/categories_provider.dart';
 import 'package:space_app/providers/space_object_provider.dart';
-import 'package:space_app/ui/widgets/object_image_picker.dart';
+import 'package:space_app/ui/widgets/feedback/app_snackbar.dart';
+import 'package:space_app/ui/widgets/object/object_image_picker.dart';
 import 'package:uuid/uuid.dart';
 
 class AddNewObject extends ConsumerStatefulWidget {
@@ -50,21 +51,22 @@ class _AddNewObjectState extends ConsumerState<AddNewObject> {
   }
 
   void _saveObject() {
-    String newCategory = _selectedCategory!;
+    String newCategory = _selectedCategory ?? '';
     if (_selectedCategory == 'Create custom...') {
       newCategory = _customCategoryController.text.trim();
-      if (newCategory.isEmpty) return;
+      if (newCategory.isEmpty) {
+        AppSnackBar.showWarning(context, 'Please enter a custom category name!');
+        return;
+      }
       ref.read(customCategoriesProvider.notifier).addCategory(newCategory);
+      AppSnackBar.showInfo(context, 'Category "$newCategory" added.');
     }
 
     final name = _nameController.text.trim();
-    if (name.isEmpty ||
-        _selectedCategory == null ||
-        _selectedCategory == '') {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter a name and select a category!'),
-        ),
+    if (name.isEmpty || newCategory.isEmpty) {
+      AppSnackBar.showWarning(
+        context,
+        'Please enter a name and select a category!',
       );
       return;
     }
@@ -82,23 +84,25 @@ class _AddNewObjectState extends ConsumerState<AddNewObject> {
     );
 
     if (widget.objectToEdit != null) {
+      final old = widget.objectToEdit!;
+      final hasChanges = old.name != name ||
+          old.category != newCategory ||
+          old.description != _descriptionController.text.trim() ||
+          old.notes != _notesController.text.trim() ||
+          old.imagePath != imagePath;
+
+      if (!hasChanges) {
+        Navigator.pop(context);
+        return;
+      }
+
       ref.read(spaceObjectsProvider.notifier).updateObject(savedObject);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Object "$name" was updated!'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      AppSnackBar.showSuccess(context, 'Object "$name" was updated!');
       Navigator.pop(context);
       Navigator.pop(context);
     } else {
       ref.read(spaceObjectsProvider.notifier).addObject(savedObject);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('New object "$name" has been created.'),
-          backgroundColor: Colors.blue,
-        ),
-      );
+      AppSnackBar.showSuccess(context, 'New object "$name" has been created.');
       Navigator.pop(context);
     }
   }

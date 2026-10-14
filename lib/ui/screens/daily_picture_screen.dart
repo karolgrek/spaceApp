@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:space_app/providers/daily_picture_provider.dart';
-import 'package:space_app/ui/widgets/apod_view.dart';
+import 'package:space_app/ui/widgets/apod/apod_view.dart';
 
 class DailyPictureScreen extends ConsumerStatefulWidget {
   const DailyPictureScreen({super.key});
@@ -31,7 +31,7 @@ class _DailyPictureScreenState extends ConsumerState<DailyPictureScreen> {
               try {
                 await ref.read(apodProvider.future);
               } catch (e) {
-                // error handled by Riverpod state
+                // error handled by Riverpod
               }
             },
           ),
