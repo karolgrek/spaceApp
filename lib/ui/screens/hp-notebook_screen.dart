@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:space_app/models/space_object.dart';
-import 'package:space_app/providers/space_object_provider.dart';
 import 'package:space_app/providers/categories_provider.dart';
-import 'package:space_app/ui/screens/edit_categories_screen.dart';
+import 'package:space_app/providers/space_object_provider.dart';
 import 'package:space_app/ui/widgets/add_new_object_button.dart';
-import 'package:space_app/ui/widgets/object_card.dart';
-import 'package:space_app/ui/widgets/search_bar.dart';
-import 'package:space_app/ui/screens/daily_picture_screen.dart';
+import 'package:space_app/ui/widgets/category_filter_dialog.dart';
+import 'package:space_app/ui/widgets/category_objects_section.dart';
 import 'package:space_app/ui/widgets/daily_picture_banner.dart';
-import 'package:space_app/ui/widgets/starry_background.dart';
+import 'package:space_app/ui/widgets/search_bar.dart';
+import 'package:space_app/ui/widgets/settings_drawer.dart';
 
 class NotebookScreen extends ConsumerWidget {
   const NotebookScreen({super.key});
@@ -19,6 +18,7 @@ class NotebookScreen extends ConsumerWidget {
     final allObjects = ref.watch(spaceObjectsProvider);
     final selectedCategories = ref.watch(selectedCategoriesProvider);
     final searchQuery = ref.watch(searchQueryProvider).toLowerCase();
+
     final displayedObjects = allObjects.where((obj) {
       final matchesCategory =
           selectedCategories.isEmpty ||
@@ -29,10 +29,7 @@ class NotebookScreen extends ConsumerWidget {
 
     final Map<String, List<SpaceObject>> groupedObjects = {};
     for (var obj in displayedObjects) {
-      if (!groupedObjects.containsKey(obj.category)) {
-        groupedObjects[obj.category] = [];
-      }
-      groupedObjects[obj.category]!.add(obj);
+      groupedObjects.putIfAbsent(obj.category, () => []).add(obj);
     }
     final categoriedObjects = groupedObjects.keys.toList();
 
@@ -43,45 +40,12 @@ class NotebookScreen extends ConsumerWidget {
           Builder(
             builder: (context) => IconButton(
               icon: const Icon(Icons.settings),
-              onPressed: () {
-                Scaffold.of(context).openEndDrawer();
-              },
+              onPressed: () => Scaffold.of(context).openEndDrawer(),
             ),
           ),
         ],
       ),
-      endDrawer: Drawer(
-        backgroundColor: Colors.transparent,
-        child: StarryBackground(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              const DrawerHeader(
-                decoration: BoxDecoration(
-                  border: Border(bottom: BorderSide(color: Colors.white24)),
-                ),
-                child: Text(
-                  "Settings",
-                  style: TextStyle(fontSize: 24, color: Colors.white),
-                ),
-              ),
-              ListTile(
-                leading: const Icon(Icons.category),
-                title: const Text("Edit custom categories"),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const EditCategoriesScreen(),
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
+      endDrawer: const SettingsDrawer(),
       body: Column(
         children: [
           const DailyPictureBanner(),
@@ -90,11 +54,13 @@ class NotebookScreen extends ConsumerWidget {
             child: Row(
               children: [
                 const Expanded(child: SearchBarWidget()),
-                IconButton(
-                  icon: const Icon(Icons.filter_list),
-                  onPressed: () {
-                    _showFilterDialog(context, ref);
-                  },
+                Badge.count(
+                  count: selectedCategories.length,
+                  isLabelVisible: selectedCategories.isNotEmpty,
+                  child: IconButton(
+                    icon: const Icon(Icons.filter_list),
+                    onPressed: () => CategoryFilterDialog.show(context),
+                  ),
                 ),
               ],
             ),
@@ -121,30 +87,9 @@ class NotebookScreen extends ConsumerWidget {
               itemCount: categoriedObjects.length,
               itemBuilder: (context, index) {
                 final categoryName = categoriedObjects[index];
-                final objectsInCategory = groupedObjects[categoryName]!;
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(categoryName, style: const TextStyle(fontSize: 22)),
-                    const Divider(color: Colors.white24, thickness: 2),
-                    const SizedBox(height: 8),
-                    GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            mainAxisSpacing: 16,
-                            crossAxisSpacing: 16,
-                          ),
-                      itemCount: objectsInCategory.length,
-                      itemBuilder: (context, gridIndex) {
-                        return ObjectCard(
-                          spaceobject: objectsInCategory[gridIndex],
-                        );
-                      },
-                    ),
-                  ],
+                return CategoryObjectsSection(
+                  categoryName: categoryName,
+                  objects: groupedObjects[categoryName]!,
                 );
               },
             ),
@@ -153,54 +98,4 @@ class NotebookScreen extends ConsumerWidget {
       ),
     );
   }
-}
-
-void _showFilterDialog(BuildContext context, WidgetRef ref) {
-  final categoriesList = ref.read(customCategoriesProvider).toList();
-
-  showDialog(
-    context: context,
-    builder: (context) {
-      return Consumer(
-        builder: (context, ref, child) {
-          final selected = ref.watch(selectedCategoriesProvider);
-          return AlertDialog(
-            title: const Text('Filter by Category'),
-            content: SizedBox(
-              width: double.maxFinite,
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: categoriesList.length,
-                itemBuilder: (context, index) {
-                  final cat = categoriesList[index];
-                  final isChecked = selected.contains(cat);
-
-                  return CheckboxListTile(
-                    title: Text(cat),
-                    value: isChecked,
-                    onChanged: (bool? checked) {
-                      final newList = List<String>.from(selected);
-                      if (checked == true) {
-                        newList.add(cat);
-                      } else {
-                        newList.remove(cat);
-                      }
-                      ref.read(selectedCategoriesProvider.notifier).state =
-                          newList;
-                    },
-                  );
-                },
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Done'),
-              ),
-            ],
-          );
-        },
-      );
-    },
-  );
 }

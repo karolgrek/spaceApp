@@ -27,7 +27,7 @@ class _StarryPainter extends CustomPainter {
       paintBackground,
     );
 
-    final paintStar = Paint()..color = Colors.white.withOpacity(0.7);
+    final paintStar = Paint()..color = Colors.white.withValues(alpha: 0.7);
     final random = Random(42);
 
     for (int i = 0; i < starCount; i++) {

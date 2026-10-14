@@ -32,7 +32,7 @@ class DailyPictureBanner extends ConsumerWidget {
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.deepPurpleAccent.withOpacity(0.4),
+                color: Colors.deepPurpleAccent.withValues(alpha: 0.4),
                 blurRadius: 8,
                 offset: const Offset(0, 4),
               ),

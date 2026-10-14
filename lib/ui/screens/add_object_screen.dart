@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:space_app/models/space_object.dart';
 import 'package:space_app/providers/categories_provider.dart';
 import 'package:space_app/providers/space_object_provider.dart';
-import 'package:space_app/ui/widgets/space_object_builder.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:space_app/ui/widgets/object_image_picker.dart';
+import 'package:uuid/uuid.dart';
 
 class AddNewObject extends ConsumerStatefulWidget {
   final SpaceObject? objectToEdit;
@@ -49,115 +49,82 @@ class _AddNewObjectState extends ConsumerState<AddNewObject> {
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    void saveObject() {
-      String newCategory = _selectedCategory!;
-      if (_selectedCategory == 'Create custom...') {
-        newCategory = _customCategoryController.text.trim();
-        if (newCategory.isEmpty) return;
-        ref.read(customCategoriesProvider.notifier).addCategory(newCategory);
-      }
-
-      final name = _nameController.text.trim();
-      if (name.isEmpty || _selectedCategory == null) return;
-      final objectId =
-          widget.objectToEdit?.id ??
-          DateTime.now().millisecondsSinceEpoch.toString();
-      final imagePath = _selectedImagePath;
-
-      final savedObject = SpaceObject(
-        id: objectId,
-        name: name,
-        category: newCategory,
-        description: _descriptionController.text.trim(),
-        imagePath: imagePath,
-        notes: _notesController.text.trim(),
-      );
-
-      if (widget.objectToEdit != null) {
-        ref.read(spaceObjectsProvider.notifier).updateObject(savedObject);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Object "$name" was updated!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-        Navigator.pop(context);
-        Navigator.pop(context);
-      } else {
-        ref.read(spaceObjectsProvider.notifier).addObject(savedObject);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('New object "$name" has been created.'),
-            backgroundColor: Colors.blue,
-          ),
-        );
-        Navigator.pop(context);
-      }
+  void _saveObject() {
+    String newCategory = _selectedCategory!;
+    if (_selectedCategory == 'Create custom...') {
+      newCategory = _customCategoryController.text.trim();
+      if (newCategory.isEmpty) return;
+      ref.read(customCategoriesProvider.notifier).addCategory(newCategory);
     }
 
+    final name = _nameController.text.trim();
+    if (name.isEmpty ||
+        _selectedCategory == null ||
+        _selectedCategory == '') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter a name and select a category!'),
+        ),
+      );
+      return;
+    }
+    final objectId =
+        widget.objectToEdit?.id ?? const Uuid().v4().substring(0, 6);
+    final imagePath = _selectedImagePath;
+
+    final savedObject = SpaceObject(
+      id: objectId,
+      name: name,
+      category: newCategory,
+      description: _descriptionController.text.trim(),
+      imagePath: imagePath,
+      notes: _notesController.text.trim(),
+    );
+
+    if (widget.objectToEdit != null) {
+      ref.read(spaceObjectsProvider.notifier).updateObject(savedObject);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Object "$name" was updated!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      Navigator.pop(context);
+      Navigator.pop(context);
+    } else {
+      ref.read(spaceObjectsProvider.notifier).addObject(savedObject);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('New object "$name" has been created.'),
+          backgroundColor: Colors.blue,
+        ),
+      );
+      Navigator.pop(context);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Add New Space Object")),
+      appBar: AppBar(
+        title: Text(widget.objectToEdit != null ? "Edit Space Object" : "Add New Space Object"),
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          InkWell(
-            onTap: () async {
-              final ImagePicker picker = ImagePicker();
-              final XFile? image = await picker.pickImage(
-                source: ImageSource.gallery,
-              );
-              if (image != null) {
-                setState(() {
-                  _selectedImagePath = image.path;
-                });
-              }
+          ObjectImagePicker(
+            imagePath: _selectedImagePath,
+            category: _selectedCategory ?? '',
+            onImageSelected: (path) {
+              setState(() {
+                _selectedImagePath = path;
+              });
             },
-            child: Container(
-              height: 200,
-              width: double.infinity,
-              clipBehavior: Clip.antiAlias,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.secondary,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  SpaceObjectImage(
-                    imagePath: _selectedImagePath,
-                    category: _selectedCategory ?? '',
-                  ),
-                  Container(
-                    color: Colors.black.withOpacity(0.3),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.add_a_photo,
-                          size: 60,
-                          color: Colors.white70,
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          _selectedImagePath.isNotEmpty
-                              ? "Tap to change photo"
-                              : "Tap to upload a photo",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.white70),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
           ),
-
           const SizedBox(height: 16),
           TextField(
             controller: _nameController,
+            maxLength: 35,
             decoration: const InputDecoration(
               labelText: "Space object name",
               hintText: "Earth C-137 / Asgard - home of Thor",
@@ -166,7 +133,7 @@ class _AddNewObjectState extends ConsumerState<AddNewObject> {
           const SizedBox(height: 16),
           DropdownButtonFormField<String>(
             decoration: const InputDecoration(labelText: 'Category'),
-            value: _selectedCategory,
+            initialValue: _selectedCategory,
             items: _categories.map((String category) {
               return DropdownMenuItem<String>(
                 value: category,
@@ -179,12 +146,12 @@ class _AddNewObjectState extends ConsumerState<AddNewObject> {
               });
             },
           ),
-
           if (_selectedCategory == 'Create custom...') ...[
             const SizedBox(height: 16),
             TextField(
               autofocus: true,
               controller: _customCategoryController,
+              maxLength: 35,
               decoration: const InputDecoration(
                 labelText: "Enter custom category name",
                 border: OutlineInputBorder(),
@@ -215,7 +182,6 @@ class _AddNewObjectState extends ConsumerState<AddNewObject> {
             ),
           ),
           const SizedBox(height: 32),
-
           if (widget.objectToEdit != null)
             Row(
               children: [
@@ -232,7 +198,7 @@ class _AddNewObjectState extends ConsumerState<AddNewObject> {
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       backgroundColor: Colors.green,
                     ),
-                    onPressed: () => saveObject(),
+                    onPressed: _saveObject,
                     child: const Text(
                       "Save",
                       style: TextStyle(fontSize: 18, color: Colors.white),
@@ -250,7 +216,7 @@ class _AddNewObjectState extends ConsumerState<AddNewObject> {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              onPressed: () => saveObject(),
+              onPressed: _saveObject,
               child: const Text(
                 "Add Object",
                 style: TextStyle(
