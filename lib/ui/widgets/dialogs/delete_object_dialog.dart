@@ -32,7 +32,11 @@ class DeleteObjectDialog extends ConsumerWidget {
             Navigator.pop(context); // Close dialog
             Navigator.pop(context); // Close detail screen
 
-            AppSnackBar.showError(context, '${object.name} deleted.');
+            AppSnackBar.showError(
+              context,
+              '${object.name} deleted.',
+              icon: Icons.delete_outline,
+            );
           },
           child: const Text("OK", style: TextStyle(color: Colors.red)),
         ),

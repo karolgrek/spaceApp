@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:space_app/providers/daily_picture_provider.dart';
 import 'package:space_app/ui/screens/daily_picture_screen.dart';
-import 'package:space_app/ui/widgets/apod/apod_view.dart';
+import 'package:space_app/ui/widgets/apod/content/apod_content_view.dart';
 import 'package:space_app/ui/widgets/apod/daily_picture_banner.dart';
+import 'package:space_app/ui/widgets/apod/status/apod_error_view.dart';
+import 'package:space_app/ui/widgets/apod/status/apod_offline_view.dart';
 
 void main() {
   group('ApodException tests', () {
@@ -65,7 +67,7 @@ void main() {
       expect(find.text('PHOTO'), findsOneWidget);
     });
 
-    testWidgets('renders video APOD badge and copy action', (tester) async {
+    testWidgets('renders video APOD badge and media overlay', (tester) async {
       final sampleData = {
         'title': 'Simulation of Black Hole Merger',
         'date': '2026-10-13',
@@ -85,8 +87,6 @@ void main() {
 
       expect(find.text('Simulation of Black Hole Merger'), findsOneWidget);
       expect(find.text('VIDEO'), findsOneWidget);
-      expect(find.text("Today's APOD is a Video"), findsOneWidget);
-      expect(find.byIcon(Icons.copy), findsOneWidget);
     });
 
     testWidgets('renders cached banner when isCached is true', (tester) async {
@@ -188,10 +188,10 @@ void main() {
           home: Scaffold(
             body: ApodErrorView(
               error: ApodException(
-                message: 'Key 403',
-                userFriendlyMessage: 'Invalid NASA API key.',
-                type: ApodErrorType.invalidApiKey,
-                statusCode: 403,
+                message: 'Server error 500',
+                userFriendlyMessage: 'NASA service is currently unreachable.',
+                type: ApodErrorType.serverError,
+                statusCode: 500,
               ),
               onRetry: () {
                 retried = true;
@@ -201,8 +201,8 @@ void main() {
         ),
       );
 
-      expect(find.text('Invalid NASA API Key'), findsOneWidget);
-      expect(find.text('Invalid NASA API key.'), findsOneWidget);
+      expect(find.text('NASA Service Unavailable'), findsOneWidget);
+      expect(find.text('NASA service is currently unreachable.'), findsOneWidget);
       expect(
         find.text('No previously downloaded picture was found in local storage.'),
         findsOneWidget,

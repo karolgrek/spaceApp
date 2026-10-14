@@ -2,41 +2,57 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 class AppSnackBar {
-  static void showSuccess(BuildContext context, String message) {
+  static void showSuccess(
+    BuildContext context,
+    String message, {
+    IconData icon = Icons.check_circle_outline,
+  }) {
     _show(
       context: context,
       message: message,
-      icon: Icons.check_circle_outline,
+      icon: icon,
       accentColor: Colors.greenAccent,
       bgColor: Colors.green.withValues(alpha: 0.25),
     );
   }
 
-  static void showInfo(BuildContext context, String message) {
+  static void showInfo(
+    BuildContext context,
+    String message, {
+    IconData icon = Icons.info_outline,
+  }) {
     _show(
       context: context,
       message: message,
-      icon: Icons.info_outline,
+      icon: icon,
       accentColor: Colors.cyanAccent,
       bgColor: Colors.blue.withValues(alpha: 0.25),
     );
   }
 
-  static void showWarning(BuildContext context, String message) {
+  static void showWarning(
+    BuildContext context,
+    String message, {
+    IconData icon = Icons.warning_amber_rounded,
+  }) {
     _show(
       context: context,
       message: message,
-      icon: Icons.warning_amber_rounded,
+      icon: icon,
       accentColor: Colors.amberAccent,
       bgColor: Colors.orange.withValues(alpha: 0.25),
     );
   }
 
-  static void showError(BuildContext context, String message) {
+  static void showError(
+    BuildContext context,
+    String message, {
+    IconData icon = Icons.error_outline,
+  }) {
     _show(
       context: context,
       message: message,
-      icon: Icons.delete_outline,
+      icon: icon,
       accentColor: Colors.redAccent,
       bgColor: Colors.red.withValues(alpha: 0.25),
     );

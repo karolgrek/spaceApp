@@ -40,6 +40,7 @@ class DeleteCategoryDialog extends ConsumerWidget {
             AppSnackBar.showError(
               context,
               "Category '$category' and all its items were deleted.",
+              icon: Icons.delete_outline,
             );
           },
           child: const Text(

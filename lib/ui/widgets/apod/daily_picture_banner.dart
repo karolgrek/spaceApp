@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:space_app/models/apod_item.dart';
 import 'package:space_app/providers/daily_picture_provider.dart';
 import 'package:space_app/ui/screens/daily_picture_screen.dart';
 
@@ -9,6 +10,7 @@ class DailyPictureBanner extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final apodData = ref.watch(apodProvider);
+    final info = _resolveBannerInfo(apodData);
 
     return InkWell(
       borderRadius: BorderRadius.circular(16),
@@ -28,244 +30,118 @@ class DailyPictureBanner extends ConsumerWidget {
         ),
         clipBehavior: Clip.antiAlias,
         child: Stack(
-          alignment: Alignment.bottomLeft,
+          fit: StackFit.expand,
           children: [
-            apodData.when(
-              data: (data) {
-                final isVideo =
-                    data['media_type']?.toString().toLowerCase() == 'video';
-                final imageUrl = (isVideo
-                            ? data['thumbnail_url']
-                            : data['url'])
-                        ?.toString() ??
-                    data['url']?.toString() ??
-                    '';
-
-                return Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    if (imageUrl.isNotEmpty)
-                      Image.network(
-                        imageUrl,
-                        width: double.infinity,
-                        height: 130,
-                        fit: BoxFit.cover,
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return _buildLoadingPlaceholder();
-                        },
-                        errorBuilder: (context, error, stackTrace) =>
-                            _buildNasaFallback(),
-                      )
-                    else
-                      _buildNasaFallback(),
-                    if (isVideo)
-                      Positioned(
-                        top: 10,
-                        right: 10,
-                        child: _buildBadge(
-                          icon: Icons.play_arrow_rounded,
-                          label: "VIDEO",
-                          color: Colors.redAccent,
-                        ),
-                      ),
-                  ],
-                );
-              },
-              loading: () => _buildLoadingPlaceholder(),
-              error: (err, stack) {
-                Map<String, dynamic>? cachedData;
-                if (err is ApodException && err.hasCache) {
-                  cachedData = err.cachedData;
-                } else if (err is OfflineWithCacheException) {
-                  cachedData = err.cachedData;
-                }
-
-                if (cachedData != null) {
-                  final isVideo =
-                      cachedData['media_type']?.toString().toLowerCase() ==
-                          'video';
-                  final url = (isVideo
-                              ? cachedData['thumbnail_url']
-                              : cachedData['url'])
-                          ?.toString() ??
-                      cachedData['url']?.toString();
-
-                  return Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      if (url != null && url.isNotEmpty)
-                        Image.network(
-                          url,
-                          width: double.infinity,
-                          height: 130,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              _buildNasaFallback(),
-                        )
-                      else
-                        _buildNasaFallback(),
-                      Positioned(
-                        top: 10,
-                        right: 10,
-                        child: _buildBadge(
-                          icon: Icons.history,
-                          label: "OFFLINE",
-                          color: Colors.amberAccent,
-                        ),
-                      ),
-                    ],
-                  );
-                }
-
-                return Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    _buildNasaFallback(),
-                    Positioned(
-                      top: 10,
-                      right: 10,
-                      child: _buildBadge(
-                        icon: Icons.error_outline,
-                        label: "TAP FOR INFO",
-                        color: Colors.orangeAccent,
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
-
-            // Gradient overlay for contrast
-            Positioned.fill(
-              child: Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.black87,
-                      Colors.black54,
-                      Colors.transparent,
-                    ],
-                    stops: [0.0, 0.45, 1.0],
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                  ),
-                ),
+            _buildBackground(info),
+            _buildGradientOverlay(),
+            _buildContent(info),
+            if (info.badge != null)
+              Positioned(
+                top: 10,
+                right: 10,
+                child: _buildBadge(info.badge!),
               ),
-            ),
-
-            // Banner title & subtitle text
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Astronomy Picture of the Day",
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 12,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  apodData.when(
-                    data: (data) => Text(
-                      data['title']?.toString() ?? 'Explore today\'s NASA photo',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                      ),
-                    ),
-                    loading: () => const Text(
-                      "Fetching from NASA...",
-                      style: TextStyle(
-                        color: Colors.white54,
-                        fontSize: 14,
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
-                    error: (err, stack) {
-                      Map<String, dynamic>? cachedData;
-                      if (err is ApodException && err.hasCache) {
-                        cachedData = err.cachedData;
-                      } else if (err is OfflineWithCacheException) {
-                        cachedData = err.cachedData;
-                      }
-
-                      if (cachedData != null) {
-                        return Text(
-                          cachedData['title']?.toString() ?? 'Offline copy available',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
-                        );
-                      }
-
-                      return const Text(
-                        "Unable to load \u2022 Tap to view status",
-                        style: TextStyle(
-                          color: Colors.orangeAccent,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 13,
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildLoadingPlaceholder() {
+  Widget _buildBackground(_BannerInfo info) {
+    if (info.isLoading) {
+      return Container(
+        color: const Color(0xFF1E1E28),
+        child: const Center(
+          child: SizedBox(
+            width: 24,
+            height: 24,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+        ),
+      );
+    }
+
+    if (info.imageUrl != null && info.imageUrl!.isNotEmpty) {
+      return Image.network(
+        info.imageUrl!,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => _buildFallbackImage(),
+      );
+    }
+
+    return _buildFallbackImage();
+  }
+
+  Widget _buildFallbackImage() {
+    return Image.asset(
+      'assets/images/nasa_logo.png',
+      fit: BoxFit.cover,
+    );
+  }
+
+  Widget _buildGradientOverlay() {
     return Container(
-      height: 130,
-      width: double.infinity,
-      color: const Color(0xFF1E1E28),
-      child: const Center(
-        child: SizedBox(
-          width: 24,
-          height: 24,
-          child: CircularProgressIndicator(strokeWidth: 2),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.black87, Colors.black54, Colors.transparent],
+          stops: [0.0, 0.45, 1.0],
+          begin: Alignment.bottomCenter,
+          end: Alignment.topCenter,
         ),
       ),
     );
   }
 
-  Widget _buildBadge({
-    required IconData icon,
-    required String label,
-    required Color color,
-  }) {
+  Widget _buildContent(_BannerInfo info) {
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          const Text(
+            "Astronomy Picture of the Day",
+            style: TextStyle(
+              color: Colors.white70,
+              fontWeight: FontWeight.w600,
+              fontSize: 12,
+              letterSpacing: 0.5,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            info.title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: info.isError ? Colors.orangeAccent : Colors.white,
+              fontWeight: info.isError ? FontWeight.w500 : FontWeight.bold,
+              fontSize: info.isError ? 13 : 15,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBadge(_BannerBadge badge) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
         color: Colors.black.withValues(alpha: 0.75),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color, width: 1),
+        border: Border.all(color: badge.color, width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 12, color: color),
+          Icon(badge.icon, size: 12, color: badge.color),
           const SizedBox(width: 4),
           Text(
-            label,
+            badge.label,
             style: TextStyle(
-              color: color,
+              color: badge.color,
               fontSize: 10,
               fontWeight: FontWeight.bold,
               letterSpacing: 0.5,
@@ -276,12 +152,87 @@ class DailyPictureBanner extends ConsumerWidget {
     );
   }
 
-  Widget _buildNasaFallback() {
-    return Image.asset(
-      'assets/images/nasa_logo.png',
-      height: 130,
-      width: double.infinity,
-      fit: BoxFit.cover,
+  _BannerInfo _resolveBannerInfo(AsyncValue<Map<String, dynamic>> apodData) {
+    return apodData.when(
+      data: (data) {
+        final item = ApodItem.fromMap(data);
+        return _BannerInfo(
+          title: item.title,
+          imageUrl: item.imageUrl,
+          badge: item.isVideo
+              ? const _BannerBadge(
+                  icon: Icons.play_arrow_rounded,
+                  label: "VIDEO",
+                  color: Colors.redAccent,
+                )
+              : null,
+        );
+      },
+      loading: () => const _BannerInfo(
+        title: "Fetching from NASA...",
+        isLoading: true,
+      ),
+      error: (err, _) {
+        Map<String, dynamic>? cache;
+        if (err is ApodException && err.hasCache) {
+          cache = err.cachedData;
+        } else if (err is OfflineWithCacheException) {
+          cache = err.cachedData;
+        }
+
+        if (cache != null) {
+          final cachedItem = ApodItem.fromMap(cache);
+          return _BannerInfo(
+            title: cachedItem.title.isNotEmpty
+                ? cachedItem.title
+                : 'Offline copy available',
+            imageUrl: cachedItem.imageUrl,
+            badge: const _BannerBadge(
+              icon: Icons.history,
+              label: "OFFLINE",
+              color: Colors.amberAccent,
+            ),
+          );
+        }
+
+        return const _BannerInfo(
+          title: "Unable to load \u2022 Tap to view status",
+          isError: true,
+          badge: _BannerBadge(
+            icon: Icons.error_outline,
+            label: "TAP FOR INFO",
+            color: Colors.orangeAccent,
+          ),
+        );
+      },
     );
   }
+}
+
+class _BannerInfo {
+  final String title;
+  final String? imageUrl;
+  final bool isLoading;
+  final bool isError;
+  final _BannerBadge? badge;
+
+  const _BannerInfo({
+    required this.title,
+    this.imageUrl,
+    this.isLoading = false,
+    this.isError = false,
+    this.badge,
+  });
+}
+
+class _BannerBadge {
+  final IconData icon;
+  final String label;
+  final Color color;
+
+  const _BannerBadge({
+    required this.icon,
+    required this.label,
+    required this.color,
+  });
 }

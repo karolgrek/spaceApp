@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:space_app/utils/app_colors.dart';
 
 class AppTheme {
   static final ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
     scaffoldBackgroundColor: Colors.transparent,
     colorScheme: const ColorScheme.dark(
-      primary: Colors.white,
-      secondary: Color(0xFF2A2A35),
-      surface: Color(0xFF22222E),
+      primary: AppColors.primary,
+      secondary: AppColors.cardSecondary,
+      surface: AppColors.cardSurface,
     ),
     appBarTheme: const AppBarTheme(
       backgroundColor: Colors.transparent,
@@ -15,7 +16,7 @@ class AppTheme {
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: const Color(0xFF2A2A35),
+      fillColor: AppColors.cardSecondary,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
         borderSide: BorderSide.none,

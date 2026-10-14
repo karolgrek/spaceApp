@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:space_app/providers/daily_picture_provider.dart';
-import 'package:space_app/ui/widgets/apod/apod_view.dart';
+import 'package:space_app/ui/widgets/apod/content/apod_content_view.dart';
+import 'package:space_app/ui/widgets/apod/status/apod_error_view.dart';
+import 'package:space_app/ui/widgets/apod/status/apod_offline_view.dart';
+import 'package:space_app/ui/widgets/feedback/app_snackbar.dart';
 
 class DailyPictureScreen extends ConsumerStatefulWidget {
   const DailyPictureScreen({super.key});
@@ -22,50 +25,44 @@ class _DailyPictureScreenState extends ConsumerState<DailyPictureScreen> {
       _cacheReason = null;
     });
 
-    if (mounted) {
-      ScaffoldMessenger.of(context).clearSnackBars();
-    }
-
     ref.invalidate(apodProvider);
 
     try {
       await ref.read(apodProvider.future);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Row(
-              children: [
-                Icon(Icons.check_circle, color: Colors.white, size: 20),
-                SizedBox(width: 8),
-                Text("Picture of the Day updated successfully!"),
-              ],
-            ),
-            backgroundColor: Color(0xFF2E7D32),
-            duration: Duration(seconds: 2),
-          ),
+        AppSnackBar.showSuccess(
+          context,
+          "Picture of the Day updated successfully!",
         );
       }
     } catch (e) {
       if (mounted) {
-        final message = e is ApodException
-            ? e.userFriendlyMessage
-            : 'Could not refresh Picture of the Day.';
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                const Icon(Icons.error_outline, color: Colors.white, size: 20),
-                const SizedBox(width: 8),
-                Expanded(child: Text(message)),
-              ],
-            ),
-            backgroundColor: const Color(0xFFC62828),
-            duration: const Duration(seconds: 4),
-          ),
-        );
+        if (e is ApodException && e.hasCache) {
+          AppSnackBar.showWarning(
+            context,
+            'Could not connect to NASA. You can view the saved picture below.',
+            icon: Icons.cloud_off_rounded,
+          );
+        } else {
+          final message = e is ApodException
+              ? e.userFriendlyMessage
+              : 'Could not refresh Picture of the Day.';
+          AppSnackBar.showError(
+            context,
+            message,
+            icon: Icons.cloud_off_rounded,
+          );
+        }
       }
     }
+  }
+
+  void _switchToCached(Map<String, dynamic>? data, String? reason) {
+    setState(() {
+      _cachedData = data;
+      _cacheReason = reason;
+      _showCached = true;
+    });
   }
 
   @override
@@ -93,58 +90,14 @@ class _DailyPictureScreenState extends ConsumerState<DailyPictureScreen> {
           : apodData.when(
               skipLoadingOnRefresh: false,
               data: (data) => ApodContentView(data: data),
-              loading: () => Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const CircularProgressIndicator(strokeWidth: 3),
-                      const SizedBox(height: 20),
-                      const Text(
-                        "Connecting to NASA server...",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        "Downloading Astronomy Picture of the Day",
-                        style: TextStyle(fontSize: 13, color: Colors.grey[400]),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              error: (error, stack) {
+              loading: () => const _LoadingView(),
+              error: (error, _) {
                 if (error is ApodException && error.hasCache) {
                   return ApodOfflineView(
                     exception: error,
                     cachedData: error.cachedData,
-                    onShowCached: () {
-                      setState(() {
-                        _cachedData = error.cachedData;
-                        _cacheReason = error.userFriendlyMessage;
-                        _showCached = true;
-                      });
-                    },
-                    onRetry: _refresh,
-                  );
-                }
-
-                // If error is not ApodException but has cache check
-                if (error is OfflineWithCacheException) {
-                  return ApodOfflineView(
-                    exception: error,
-                    cachedData: error.cachedData,
-                    onShowCached: () {
-                      setState(() {
-                        _cachedData = error.cachedData;
-                        _cacheReason = error.userFriendlyMessage;
-                        _showCached = true;
-                      });
-                    },
+                    onShowCached: () =>
+                        _switchToCached(error.cachedData, error.userFriendlyMessage),
                     onRetry: _refresh,
                   );
                 }
@@ -155,6 +108,38 @@ class _DailyPictureScreenState extends ConsumerState<DailyPictureScreen> {
                 );
               },
             ),
+    );
+  }
+}
+
+class _LoadingView extends StatelessWidget {
+  const _LoadingView();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const CircularProgressIndicator(strokeWidth: 3),
+            const SizedBox(height: 20),
+            const Text(
+              "Connecting to NASA server...",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              "Downloading Astronomy Picture of the Day",
+              style: TextStyle(fontSize: 13, color: Colors.grey[400]),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
