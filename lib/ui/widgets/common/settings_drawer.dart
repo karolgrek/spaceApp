@@ -8,7 +8,8 @@ class SettingsDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: Colors.transparent,
+      backgroundColor:
+          Theme.of(context).colorScheme.surface.withValues(alpha: 0.90),
       child: StarryBackground(
         child: ListView(
           padding: EdgeInsets.zero,

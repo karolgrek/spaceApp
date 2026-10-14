@@ -13,6 +13,60 @@ class DailyPictureScreen extends ConsumerStatefulWidget {
 class _DailyPictureScreenState extends ConsumerState<DailyPictureScreen> {
   bool _showCached = false;
   Map<String, dynamic>? _cachedData;
+  String? _cacheReason;
+
+  Future<void> _refresh() async {
+    setState(() {
+      _showCached = false;
+      _cachedData = null;
+      _cacheReason = null;
+    });
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+    }
+
+    ref.invalidate(apodProvider);
+
+    try {
+      await ref.read(apodProvider.future);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.check_circle, color: Colors.white, size: 20),
+                SizedBox(width: 8),
+                Text("Picture of the Day updated successfully!"),
+              ],
+            ),
+            backgroundColor: Color(0xFF2E7D32),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        final message = e is ApodException
+            ? e.userFriendlyMessage
+            : 'Could not refresh Picture of the Day.';
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.error_outline, color: Colors.white, size: 20),
+                const SizedBox(width: 8),
+                Expanded(child: Text(message)),
+              ],
+            ),
+            backgroundColor: const Color(0xFFC62828),
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,50 +78,80 @@ class _DailyPictureScreenState extends ConsumerState<DailyPictureScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: () async {
-              setState(() => _showCached = false);
-              ScaffoldMessenger.of(context).clearSnackBars();
-              ref.invalidate(apodProvider);
-              try {
-                await ref.read(apodProvider.future);
-              } catch (e) {
-                // error handled by Riverpod
-              }
-            },
+            tooltip: "Refresh",
+            onPressed: _refresh,
           ),
         ],
       ),
       body: _showCached && _cachedData != null
-          ? ApodContentView(data: _cachedData!)
+          ? ApodContentView(
+              data: _cachedData!,
+              isCached: true,
+              cacheReason: _cacheReason,
+              onRetryOnline: _refresh,
+            )
           : apodData.when(
               skipLoadingOnRefresh: false,
               data: (data) => ApodContentView(data: data),
-              loading: () => const Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircularProgressIndicator(),
-                    SizedBox(height: 16),
-                    Text("Connecting to NASA server..."),
-                  ],
+              loading: () => Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const CircularProgressIndicator(strokeWidth: 3),
+                      const SizedBox(height: 20),
+                      const Text(
+                        "Connecting to NASA server...",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        "Downloading Astronomy Picture of the Day",
+                        style: TextStyle(fontSize: 13, color: Colors.grey[400]),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               error: (error, stack) {
-                if (error is OfflineWithCacheException) {
+                if (error is ApodException && error.hasCache) {
                   return ApodOfflineView(
+                    exception: error,
+                    cachedData: error.cachedData,
                     onShowCached: () {
                       setState(() {
                         _cachedData = error.cachedData;
+                        _cacheReason = error.userFriendlyMessage;
                         _showCached = true;
                       });
                     },
+                    onRetry: _refresh,
                   );
                 }
+
+                // If error is not ApodException but has cache check
+                if (error is OfflineWithCacheException) {
+                  return ApodOfflineView(
+                    exception: error,
+                    cachedData: error.cachedData,
+                    onShowCached: () {
+                      setState(() {
+                        _cachedData = error.cachedData;
+                        _cacheReason = error.userFriendlyMessage;
+                        _showCached = true;
+                      });
+                    },
+                    onRetry: _refresh,
+                  );
+                }
+
                 return ApodErrorView(
-                  onRetry: () {
-                    setState(() => _showCached = false);
-                    ref.invalidate(apodProvider);
-                  },
+                  error: error,
+                  onRetry: _refresh,
                 );
               },
             ),
