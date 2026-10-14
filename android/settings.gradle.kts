@@ -1,3 +1,14 @@
+run {
+    try {
+        val pe = Class.forName("java.lang.ProcessEnvironment")
+        val field = pe.getDeclaredField("theCaseInsensitiveEnvironment")
+        field.isAccessible = true
+        @Suppress("UNCHECKED_CAST")
+        val env = field.get(null) as? MutableMap<String, String>
+        env?.remove("ANDROID_PREFS_ROOT")
+    } catch (_: Exception) {}
+}
+
 pluginManagement {
     val flutterSdkPath =
         run {
