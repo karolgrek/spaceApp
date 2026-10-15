@@ -58,6 +58,9 @@ class ApodContentView extends StatelessWidget {
                 ApodMetadataSection(
                   date: item.date,
                   copyright: item.copyright,
+                  imageUrl: item.imageUrl,
+                  title: item.title,
+                  isVideo: item.isVideo,
                 ),
                 const SizedBox(height: 16),
                 const Divider(color: AppColors.divider),

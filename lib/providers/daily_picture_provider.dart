@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:space_app/services/image_download_service.dart';
 
 // NASA's official modern APOD endpoint (science.nasa.gov)
 const String apodApiUrl =
@@ -58,6 +59,10 @@ final dioProvider = Provider<Dio>((ref) {
       receiveTimeout: const Duration(seconds: 15),
     ),
   );
+});
+
+final imageDownloadServiceProvider = Provider<ImageDownloadService>((ref) {
+  return ImageDownloadService(ref.watch(dioProvider));
 });
 
 final apodProvider = FutureProvider<Map<String, dynamic>>((ref) async {
