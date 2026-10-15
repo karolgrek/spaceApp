@@ -23,13 +23,14 @@ class SpaceObjectAdapter extends TypeAdapter<SpaceObject> {
       description: fields[3] as String,
       imagePath: fields[4] as String,
       notes: fields[5] as String,
+      isFavorite: fields[6] == null ? false : fields[6] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, SpaceObject obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -41,7 +42,9 @@ class SpaceObjectAdapter extends TypeAdapter<SpaceObject> {
       ..writeByte(4)
       ..write(obj.imagePath)
       ..writeByte(5)
-      ..write(obj.notes);
+      ..write(obj.notes)
+      ..writeByte(6)
+      ..write(obj.isFavorite);
   }
 
   @override

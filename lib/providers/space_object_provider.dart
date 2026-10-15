@@ -59,6 +59,23 @@ class SpaceObjectsNotifier extends Notifier<List<SpaceObject>> {
       state = newState;
     }
   }
+
+  /// Toggles favorite status of an object by its [id].
+  /// Returns the new `isFavorite` status.
+  bool toggleFavorite(String id) {
+    final box = Hive.box<SpaceObject>('space_objects');
+    final index = state.indexWhere((obj) => obj.id == id);
+    if (index == -1) return false;
+
+    final current = state[index];
+    final updated = current.copyWith(isFavorite: !current.isFavorite);
+    box.put(updated.id, updated);
+
+    final newState = [...state];
+    newState[index] = updated;
+    state = newState;
+    return updated.isFavorite;
+  }
 }
 
 final spaceObjectsProvider =
@@ -67,3 +84,5 @@ final spaceObjectsProvider =
     });
 
 final searchQueryProvider = StateProvider<String>((ref) => '');
+
+final favoritesFilterProvider = StateProvider<bool>((ref) => false);

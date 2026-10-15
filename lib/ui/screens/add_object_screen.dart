@@ -79,6 +79,7 @@ class _AddNewObjectState extends ConsumerState<AddNewObject> {
       description: _descriptionController.text.trim(),
       imagePath: imagePath,
       notes: _notesController.text.trim(),
+      isFavorite: widget.objectToEdit?.isFavorite ?? false,
     );
 
     if (widget.objectToEdit != null) {

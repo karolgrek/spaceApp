@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:space_app/models/space_object.dart';
 import 'package:space_app/providers/space_object_provider.dart';
+import 'package:space_app/ui/widgets/buttons/favorite_icon_button.dart';
 import 'package:space_app/ui/widgets/buttons/object_detail_buttons.dart';
 import 'package:space_app/ui/widgets/object/space_object_builder.dart';
 
@@ -19,7 +20,12 @@ class ObjectDetailScreen extends ConsumerWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(title: Text(currentObject.name)),
+      appBar: AppBar(
+        title: Text(currentObject.name),
+        actions: [
+          FavoriteIconButton(spaceObject: currentObject),
+        ],
+      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

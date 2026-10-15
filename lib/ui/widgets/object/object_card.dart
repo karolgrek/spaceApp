@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:space_app/models/space_object.dart';
 import 'package:space_app/ui/screens/object_detail_screen.dart';
+import 'package:space_app/ui/widgets/object/favorite_badge.dart';
 import 'package:space_app/ui/widgets/object/space_object_builder.dart';
 
 class ObjectCard extends StatelessWidget {
@@ -25,47 +26,57 @@ class ObjectCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
         ),
         color: Theme.of(context).colorScheme.secondary,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Stack(
           children: [
-            Expanded(
-              child: SpaceObjectImage(
-                imagePath: spaceObject.imagePath,
-                category: spaceObject.category,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    spaceObject.name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: SpaceObjectImage(
+                    imagePath: spaceObject.imagePath,
+                    category: spaceObject.category,
                   ),
-                  const SizedBox(height: 4),
-                  SizedBox(
-                    height: 36,
-                    child: Text(
-                      spaceObject.description.isEmpty
-                          ? "No description."
-                          : spaceObject.description,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.white70,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        spaceObject.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
-                    ),
+                      const SizedBox(height: 4),
+                      SizedBox(
+                        height: 36,
+                        child: Text(
+                          spaceObject.description.isEmpty
+                              ? "No description."
+                              : spaceObject.description,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.white70,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
+            if (spaceObject.isFavorite)
+              const Positioned(
+                top: 8,
+                right: 8,
+                child: FavoriteBadge(),
+              ),
           ],
         ),
       ),

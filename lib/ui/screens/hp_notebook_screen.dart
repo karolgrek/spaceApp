@@ -17,9 +17,13 @@ class NotebookScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final allObjects = ref.watch(spaceObjectsProvider);
     final selectedCategories = ref.watch(selectedCategoriesProvider);
+    final favoritesOnly = ref.watch(favoritesFilterProvider);
     final searchQuery = ref.watch(searchQueryProvider).toLowerCase();
 
     final displayedObjects = allObjects.where((obj) {
+      if (favoritesOnly && !obj.isFavorite) {
+        return false;
+      }
       final matchesCategory =
           selectedCategories.isEmpty ||
           selectedCategories.contains(obj.category);
@@ -32,6 +36,9 @@ class NotebookScreen extends ConsumerWidget {
       groupedObjects.putIfAbsent(obj.category, () => []).add(obj);
     }
     final categoriedObjects = groupedObjects.keys.toList();
+
+    final activeFiltersCount =
+        selectedCategories.length + (favoritesOnly ? 1 : 0);
 
     return Scaffold(
       appBar: AppBar(
@@ -55,8 +62,8 @@ class NotebookScreen extends ConsumerWidget {
               children: [
                 const Expanded(child: SearchBarWidget()),
                 Badge.count(
-                  count: selectedCategories.length,
-                  isLabelVisible: selectedCategories.isNotEmpty,
+                  count: activeFiltersCount,
+                  isLabelVisible: activeFiltersCount > 0,
                   child: IconButton(
                     icon: const Icon(Icons.filter_list),
                     onPressed: () => CategoryFilterDialog.show(context),

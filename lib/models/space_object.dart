@@ -21,6 +21,9 @@ class SpaceObject extends HiveObject {
   @HiveField(5)
   final String notes;
 
+  @HiveField(6)
+  final bool isFavorite;
+
   SpaceObject({
     required this.id,
     required this.name,
@@ -28,6 +31,7 @@ class SpaceObject extends HiveObject {
     required this.description,
     required this.imagePath,
     required this.notes,
+    this.isFavorite = false,
   });
 
   SpaceObject copyWith({
@@ -37,6 +41,7 @@ class SpaceObject extends HiveObject {
     String? description,
     String? imagePath,
     String? notes,
+    bool? isFavorite,
   }) {
     return SpaceObject(
       id: id ?? this.id,
@@ -45,6 +50,7 @@ class SpaceObject extends HiveObject {
       description: description ?? this.description,
       imagePath: imagePath ?? this.imagePath,
       notes: notes ?? this.notes,
+      isFavorite: isFavorite ?? this.isFavorite,
     );
   }
 
@@ -58,7 +64,8 @@ class SpaceObject extends HiveObject {
           category == other.category &&
           description == other.description &&
           imagePath == other.imagePath &&
-          notes == other.notes;
+          notes == other.notes &&
+          isFavorite == other.isFavorite;
 
   @override
   int get hashCode =>
@@ -67,5 +74,6 @@ class SpaceObject extends HiveObject {
       category.hashCode ^
       description.hashCode ^
       imagePath.hashCode ^
-      notes.hashCode;
+      notes.hashCode ^
+      isFavorite.hashCode;
 }
