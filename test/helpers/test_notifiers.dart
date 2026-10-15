@@ -26,6 +26,7 @@ class TestSpaceObjectsNotifier extends SpaceObjectsNotifier {
     final newState = [...state];
     newState[index] = updated;
     state = newState;
+    checkFavoritesReset();
     return updated.isFavorite;
   }
 }

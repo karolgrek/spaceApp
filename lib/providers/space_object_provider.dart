@@ -19,6 +19,7 @@ class SpaceObjectsNotifier extends Notifier<List<SpaceObject>> {
     final box = Hive.box<SpaceObject>('space_objects');
     box.delete(id);
     state = state.where((obj) => obj.id != id).toList();
+    checkFavoritesReset();
   }
 
   void deleteObjectsByCategory(String category) {
@@ -30,6 +31,7 @@ class SpaceObjectsNotifier extends Notifier<List<SpaceObject>> {
       box.delete(obj.id);
     }
     state = state.where((obj) => obj.category != category).toList();
+    checkFavoritesReset();
   }
 
   void updateObject(SpaceObject updatedObject) {
@@ -39,6 +41,7 @@ class SpaceObjectsNotifier extends Notifier<List<SpaceObject>> {
       for (final obj in state)
         if (obj.id == updatedObject.id) updatedObject else obj,
     ];
+    checkFavoritesReset();
   }
 
   /// Updates category name for all objects that belonged to old category.
@@ -74,7 +77,16 @@ class SpaceObjectsNotifier extends Notifier<List<SpaceObject>> {
     final newState = [...state];
     newState[index] = updated;
     state = newState;
+    checkFavoritesReset();
     return updated.isFavorite;
+  }
+
+  void checkFavoritesReset() {
+    if (!state.any((obj) => obj.isFavorite)) {
+      if (ref.read(favoritesFilterProvider)) {
+        ref.read(favoritesFilterProvider.notifier).state = false;
+      }
+    }
   }
 }
 

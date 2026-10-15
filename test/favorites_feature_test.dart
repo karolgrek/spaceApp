@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:space_app/models/space_object.dart';
 import 'package:space_app/providers/categories_provider.dart';
 import 'package:space_app/providers/space_object_provider.dart';
+import 'package:space_app/ui/screens/hp_notebook_screen.dart';
 import 'package:space_app/ui/screens/object_detail_screen.dart';
 import 'package:space_app/ui/widgets/category/category_filter_dialog.dart';
 import 'package:space_app/ui/widgets/object/object_card.dart';
@@ -223,6 +224,78 @@ void main() {
       await tester.pump();
 
       expect(container.read(favoritesFilterProvider), isTrue);
+    });
+
+    testWidgets(
+        'auto-resets favorites filter when the last favorite object is removed',
+        (tester) async {
+      final favObj = SpaceObject(
+        id: 'sole_fav',
+        name: 'Pluto',
+        category: 'Dwarf Planet',
+        description: 'Small world',
+        imagePath: '',
+        notes: '',
+        isFavorite: true,
+      );
+
+      final container = ProviderContainer(
+        overrides: [
+          spaceObjectsProvider.overrideWith(
+            () => TestSpaceObjectsNotifier([favObj]),
+          ),
+          favoritesFilterProvider.overrideWith((ref) => true),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      // Initially filter is active
+      expect(container.read(favoritesFilterProvider), isTrue);
+
+      // Now toggle the sole favorite to false
+      container.read(spaceObjectsProvider.notifier).toggleFavorite('sole_fav');
+
+      // The filter should automatically reset to false
+      expect(container.read(favoritesFilterProvider), isFalse);
+    });
+
+    testWidgets(
+        'NotebookScreen shows all objects when favorites filter was active but hasFavorites is false',
+        (tester) async {
+      final normalObj = SpaceObject(
+        id: 'normal_1',
+        name: 'Earth',
+        category: 'Planet',
+        description: '',
+        imagePath: '',
+        notes: '',
+        isFavorite: false,
+      );
+
+      final container = ProviderContainer(
+        overrides: [
+          spaceObjectsProvider.overrideWith(
+            () => TestSpaceObjectsNotifier([normalObj]),
+          ),
+          favoritesFilterProvider.overrideWith((ref) => true),
+          customCategoriesProvider.overrideWith(
+            () => TestCategoriesNotifier(['Planet']),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: const MaterialApp(
+            home: NotebookScreen(),
+          ),
+        ),
+      );
+
+      // Since hasFavorites is false, Earth must still be visible and not filtered out!
+      expect(find.text('Earth'), findsOneWidget);
     });
   });
 }

@@ -22,6 +22,12 @@ class CategoryFilterDialog extends ConsumerWidget {
     final hasFavorites = allObjects.any((obj) => obj.isFavorite);
     final favoritesOnly = ref.watch(favoritesFilterProvider);
 
+    if (!hasFavorites && favoritesOnly) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(favoritesFilterProvider.notifier).state = false;
+      });
+    }
+
     return AlertDialog(
       title: const Text('Filter by Category'),
       content: ConstrainedBox(
@@ -52,7 +58,7 @@ class CategoryFilterDialog extends ConsumerWidget {
         ),
       ),
       actions: [
-        if (selected.isNotEmpty || favoritesOnly)
+        if (selected.isNotEmpty || (favoritesOnly && hasFavorites))
           TextButton(
             onPressed: () {
               ref.read(selectedCategoriesProvider.notifier).state = [];

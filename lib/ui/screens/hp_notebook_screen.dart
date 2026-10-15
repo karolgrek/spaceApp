@@ -17,7 +17,8 @@ class NotebookScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final allObjects = ref.watch(spaceObjectsProvider);
     final selectedCategories = ref.watch(selectedCategoriesProvider);
-    final favoritesOnly = ref.watch(favoritesFilterProvider);
+    final hasFavorites = allObjects.any((obj) => obj.isFavorite);
+    final favoritesOnly = ref.watch(favoritesFilterProvider) && hasFavorites;
     final searchQuery = ref.watch(searchQueryProvider).toLowerCase();
 
     final displayedObjects = allObjects.where((obj) {
@@ -88,18 +89,47 @@ class NotebookScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 16),
           Expanded(
-            child: ListView.builder(
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.all(16.0),
-              itemCount: categoriedObjects.length,
-              itemBuilder: (context, index) {
-                final categoryName = categoriedObjects[index];
-                return CategoryObjectsSection(
-                  categoryName: categoryName,
-                  objects: groupedObjects[categoryName]!,
-                );
-              },
-            ),
+            child: categoriedObjects.isEmpty
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            favoritesOnly
+                                ? Icons.favorite_border
+                                : Icons.search_off,
+                            size: 56,
+                            color: Colors.white30,
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            favoritesOnly
+                                ? "No favorite space objects found"
+                                : "No space objects match your filter",
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: Colors.white60,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                : ListView.builder(
+                    physics: const BouncingScrollPhysics(),
+                    padding: const EdgeInsets.all(16.0),
+                    itemCount: categoriedObjects.length,
+                    itemBuilder: (context, index) {
+                      final categoryName = categoriedObjects[index];
+                      return CategoryObjectsSection(
+                        categoryName: categoryName,
+                        objects: groupedObjects[categoryName]!,
+                      );
+                    },
+                  ),
           ),
         ],
       ),
