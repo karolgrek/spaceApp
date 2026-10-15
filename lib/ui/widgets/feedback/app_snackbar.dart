@@ -6,6 +6,7 @@ class AppSnackBar {
     BuildContext context,
     String message, {
     IconData icon = Icons.check_circle_outline,
+    ScaffoldMessengerState? messenger,
   }) {
     _show(
       context: context,
@@ -13,6 +14,7 @@ class AppSnackBar {
       icon: icon,
       accentColor: Colors.greenAccent,
       bgColor: Colors.green.withValues(alpha: 0.25),
+      messenger: messenger,
     );
   }
 
@@ -20,6 +22,7 @@ class AppSnackBar {
     BuildContext context,
     String message, {
     IconData icon = Icons.info_outline,
+    ScaffoldMessengerState? messenger,
   }) {
     _show(
       context: context,
@@ -27,6 +30,7 @@ class AppSnackBar {
       icon: icon,
       accentColor: Colors.cyanAccent,
       bgColor: Colors.blue.withValues(alpha: 0.25),
+      messenger: messenger,
     );
   }
 
@@ -34,6 +38,7 @@ class AppSnackBar {
     BuildContext context,
     String message, {
     IconData icon = Icons.warning_amber_rounded,
+    ScaffoldMessengerState? messenger,
   }) {
     _show(
       context: context,
@@ -41,6 +46,7 @@ class AppSnackBar {
       icon: icon,
       accentColor: Colors.amberAccent,
       bgColor: Colors.orange.withValues(alpha: 0.25),
+      messenger: messenger,
     );
   }
 
@@ -48,6 +54,7 @@ class AppSnackBar {
     BuildContext context,
     String message, {
     IconData icon = Icons.error_outline,
+    ScaffoldMessengerState? messenger,
   }) {
     _show(
       context: context,
@@ -55,6 +62,7 @@ class AppSnackBar {
       icon: icon,
       accentColor: Colors.redAccent,
       bgColor: Colors.red.withValues(alpha: 0.25),
+      messenger: messenger,
     );
   }
 
@@ -64,9 +72,13 @@ class AppSnackBar {
     required IconData icon,
     required Color accentColor,
     required Color bgColor,
+    ScaffoldMessengerState? messenger,
   }) {
-    ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(context).showSnackBar(
+    final sm = messenger ?? ScaffoldMessenger.maybeOf(context);
+    if (sm == null) return;
+
+    sm.clearSnackBars();
+    sm.showSnackBar(
       SnackBar(
         elevation: 0,
         backgroundColor: Colors.transparent,

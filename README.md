@@ -148,19 +148,12 @@ cd space_app
 flutter pub get
 ```
 
-### 3. Environment Variables Setup
-Create a `.env` file in the root directory of the project (if it doesn't already exist):
-```env
-NASA_API_KEY=DEMO_KEY
-```
-*(Note: The NASA APOD endpoint works out-of-the-box with the default `DEMO_KEY`).*
-
-### 4. Code Generation (for Hive models)
+### 3. Code Generation (for Hive models)
 ```bash
 dart run build_runner build --delete-conflicting-outputs
 ```
 
-### 5. Run the Application
+### 4. Run the Application
 ```bash
 # On your default connected device:
 flutter run

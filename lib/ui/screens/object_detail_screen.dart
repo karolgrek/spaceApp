@@ -1,18 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:space_app/models/space_object.dart';
+import 'package:space_app/providers/space_object_provider.dart';
 import 'package:space_app/ui/widgets/buttons/object_detail_buttons.dart';
 import 'package:space_app/ui/widgets/object/space_object_builder.dart';
 
 class ObjectDetailScreen extends ConsumerWidget {
-  final SpaceObject spaceobject;
+  final SpaceObject spaceObject;
 
-  const ObjectDetailScreen({super.key, required this.spaceobject});
+  const ObjectDetailScreen({super.key, required this.spaceObject});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final allObjects = ref.watch(spaceObjectsProvider);
+    final currentObject = allObjects.firstWhere(
+      (obj) => obj.id == spaceObject.id,
+      orElse: () => spaceObject,
+    );
+
     return Scaffold(
-      appBar: AppBar(title: Text(spaceobject.name)),
+      appBar: AppBar(title: Text(currentObject.name)),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -21,8 +28,8 @@ class ObjectDetailScreen extends ConsumerWidget {
               height: 300,
               width: double.infinity,
               child: SpaceObjectImage(
-                imagePath: spaceobject.imagePath,
-                category: spaceobject.category,
+                imagePath: currentObject.imagePath,
+                category: currentObject.category,
               ),
             ),
 
@@ -32,13 +39,13 @@ class ObjectDetailScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    spaceobject.name,
+                    currentObject.name,
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
-                    "Category: ${spaceobject.category}",
+                    "Category: ${currentObject.category}",
                     style: const TextStyle(color: Colors.grey, fontSize: 16),
                   ),
                   const SizedBox(height: 16),
@@ -47,7 +54,7 @@ class ObjectDetailScreen extends ConsumerWidget {
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                   ),
                   const SizedBox(height: 8),
-                  Text(spaceobject.description),
+                  Text(currentObject.description),
                   const SizedBox(height: 16),
                   const Text(
                     "Personal Notes",
@@ -55,9 +62,9 @@ class ObjectDetailScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    spaceobject.notes.isEmpty
+                    currentObject.notes.isEmpty
                         ? "No notes added."
-                        : spaceobject.notes,
+                        : currentObject.notes,
                   ),
                 ],
               ),
@@ -65,7 +72,7 @@ class ObjectDetailScreen extends ConsumerWidget {
           ],
         ),
       ),
-      bottomNavigationBar: ObjectActionButtons(spaceobject: spaceobject),
+      bottomNavigationBar: ObjectActionButtons(spaceObject: currentObject),
     );
   }
 }

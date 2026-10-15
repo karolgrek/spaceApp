@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:space_app/ui/widgets/object/space_object_builder.dart';
 
 class ObjectImagePicker extends StatelessWidget {
@@ -23,7 +25,16 @@ class ObjectImagePicker extends StatelessWidget {
           source: ImageSource.gallery,
         );
         if (image != null) {
-          onImageSelected(image.path);
+          try {
+            final appDir = await getApplicationDocumentsDirectory();
+            final fileName =
+                'obj_${DateTime.now().millisecondsSinceEpoch}_${image.name}';
+            final savedImage =
+                await File(image.path).copy('${appDir.path}/$fileName');
+            onImageSelected(savedImage.path);
+          } catch (_) {
+            onImageSelected(image.path);
+          }
         }
       },
       child: Container(

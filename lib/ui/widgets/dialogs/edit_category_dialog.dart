@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:space_app/providers/categories_provider.dart';
 import 'package:space_app/ui/widgets/feedback/app_snackbar.dart';
 
+import 'package:space_app/utils/app_constants.dart';
+
 class EditCategoryDialog extends ConsumerStatefulWidget {
   final String oldCategory;
 
@@ -36,16 +38,38 @@ class _EditCategoryDialogState extends ConsumerState<EditCategoryDialog> {
 
   void _onSave() {
     final newName = _controller.text.trim();
-    if (newName.isNotEmpty && newName != widget.oldCategory) {
-      ref
-          .read(customCategoriesProvider.notifier)
-          .updateCategoryName(widget.oldCategory, newName);
-      AppSnackBar.showInfo(
-        context,
-        "Category '${widget.oldCategory}' was updated to '$newName'.",
-      );
+    if (newName.isEmpty) {
+      AppSnackBar.showWarning(context, "Category name cannot be empty.");
+      return;
     }
+    if (newName == AppConstants.createCustomCategoryOption) {
+      AppSnackBar.showWarning(context, "This category name is reserved.");
+      return;
+    }
+    if (newName == widget.oldCategory) {
+      Navigator.pop(context);
+      return;
+    }
+
+    final success = ref
+        .read(customCategoriesProvider.notifier)
+        .updateCategoryName(widget.oldCategory, newName);
+
+    if (!success) {
+      AppSnackBar.showWarning(
+        context,
+        "Category '$newName' already exists or is invalid.",
+      );
+      return;
+    }
+
+    final messenger = ScaffoldMessenger.of(context);
     Navigator.pop(context);
+    AppSnackBar.showInfo(
+      context,
+      "Category '${widget.oldCategory}' was updated to '$newName'.",
+      messenger: messenger,
+    );
   }
 
   @override

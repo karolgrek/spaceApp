@@ -2,24 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:space_app/providers/categories_provider.dart';
 import 'package:space_app/ui/widgets/category/category_tile.dart';
+import 'package:space_app/utils/app_constants.dart';
 
 class EditCategoriesScreen extends ConsumerWidget {
   const EditCategoriesScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final baseCategories = [
-      'Planet',
-      'Star',
-      'Galaxy',
-      'Comet',
-      'Black Hole',
-      'Moon',
-      'Satellite',
-    ];
     final customCategories = ref
         .watch(customCategoriesProvider)
-        .where((c) => !baseCategories.contains(c))
+        .where((c) => !AppConstants.baseCategories.contains(c))
         .toList();
 
     return Scaffold(

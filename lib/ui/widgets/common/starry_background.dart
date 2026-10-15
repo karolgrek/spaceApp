@@ -12,7 +12,7 @@ class StarryBackground extends StatelessWidget {
       children: [
         CustomPaint(
           painter: StarPainter(),
-          child: Container(),
+          child: const SizedBox.expand(),
         ),
         child,
       ],

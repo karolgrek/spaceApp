@@ -41,7 +41,7 @@ class SpaceObjectsNotifier extends Notifier<List<SpaceObject>> {
     ];
   }
 
-  /// Updates category name for all object that belionged to old category
+  /// Updates category name for all objects that belonged to old category.
   /// Used when a custom category is renamed.
   void updateCategoryForObjects(String oldCategory, String newCategory) {
     final box = Hive.box<SpaceObject>('space_objects');
@@ -49,14 +49,7 @@ class SpaceObjectsNotifier extends Notifier<List<SpaceObject>> {
     List<SpaceObject> newState = [...state];
     for (int i = 0; i < newState.length; i++) {
       if (newState[i].category == oldCategory) {
-        final updatedObj = SpaceObject(
-          id: newState[i].id,
-          name: newState[i].name,
-          category: newCategory,
-          description: newState[i].description,
-          imagePath: newState[i].imagePath,
-          notes: newState[i].notes,
-        );
+        final updatedObj = newState[i].copyWith(category: newCategory);
         box.put(updatedObj.id, updatedObj);
         newState[i] = updatedObj;
         updated = true;

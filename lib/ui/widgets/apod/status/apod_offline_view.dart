@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:space_app/providers/daily_picture_provider.dart';
+import 'package:space_app/utils/app_colors.dart';
 import 'apod_error_presentation.dart';
 import 'apod_status_layout.dart';
 
@@ -41,7 +42,7 @@ class ApodOfflineView extends StatelessWidget {
               : "View Saved Picture",
         ),
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF3F3D56),
+          backgroundColor: AppColors.actionButton,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 14),
           shape: RoundedRectangleBorder(
@@ -73,7 +74,7 @@ class ApodOfflineView extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFF22222E),
+        color: AppColors.cardSurface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
       ),

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:space_app/utils/app_constants.dart';
 
 class SpaceObjectImage extends StatelessWidget {
   final String imagePath;
@@ -14,10 +15,7 @@ class SpaceObjectImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (imagePath.isNotEmpty) {
-      String path = imagePath;
-      if (path == 'assets/images/black_hole.png') {
-        path = 'assets/images/blackhole.png';
-      }
+      final path = imagePath;
 
       if (path.startsWith('assets/')) {
         return Image.asset(
@@ -47,32 +45,7 @@ class SpaceObjectImage extends StatelessWidget {
   }
 
   Widget _buildPlaceholder() {
-    IconData icon;
-    switch (category) {
-      case 'Planet':
-        icon = Icons.public;
-        break;
-      case 'Star':
-        icon = Icons.star;
-        break;
-      case 'Galaxy':
-        icon = Icons.blur_circular;
-        break;
-      case 'Comet':
-        icon = Icons.flash_on;
-        break;
-      case 'Black Hole':
-        icon = Icons.brightness_1;
-        break;
-      case 'Moon':
-        icon = Icons.nightlight_round;
-        break;
-      case 'Satellite':
-        icon = Icons.satellite_alt;
-        break;
-      default:
-        icon = Icons.auto_awesome;
-    }
+    final icon = AppConstants.getCategoryIcon(category);
 
     return Container(
       color: Colors.deepPurple[900],

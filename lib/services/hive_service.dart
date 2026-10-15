@@ -12,7 +12,7 @@ class HiveService {
 
     // Seeding initial data for the first launch
     if (box.isEmpty) {
-      await box.addAll([
+      final initialObjects = [
         SpaceObject(
           id: '1',
           name: 'Sun',
@@ -81,7 +81,11 @@ class HiveService {
           imagePath: 'assets/images/satellite.png',
           notes: '',
         ),
-      ]);
+      ];
+
+      for (final obj in initialObjects) {
+        await box.put(obj.id, obj);
+      }
     }
   }
 }

@@ -33,6 +33,7 @@ class DeleteCategoryDialog extends ConsumerWidget {
             backgroundColor: Colors.redAccent,
           ),
           onPressed: () {
+            final messenger = ScaffoldMessenger.of(context);
             ref
                 .read(customCategoriesProvider.notifier)
                 .removeCategory(category);
@@ -41,6 +42,7 @@ class DeleteCategoryDialog extends ConsumerWidget {
               context,
               "Category '$category' and all its items were deleted.",
               icon: Icons.delete_outline,
+              messenger: messenger,
             );
           },
           child: const Text(

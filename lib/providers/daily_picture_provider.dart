@@ -51,13 +51,17 @@ class OfflineWithCacheException extends ApodException {
         );
 }
 
-final apodProvider = FutureProvider<Map<String, dynamic>>((ref) async {
-  final dio = Dio(
+final dioProvider = Provider<Dio>((ref) {
+  return Dio(
     BaseOptions(
       connectTimeout: const Duration(seconds: 15),
       receiveTimeout: const Duration(seconds: 15),
     ),
   );
+});
+
+final apodProvider = FutureProvider<Map<String, dynamic>>((ref) async {
+  final dio = ref.watch(dioProvider);
   final box = Hive.box('apod_cache');
 
   try {
@@ -94,18 +98,25 @@ final apodProvider = FutureProvider<Map<String, dynamic>>((ref) async {
           .trim();
     }
 
-    final hdUrl = item['hdurl']?.toString();
+    final mediaType = item['media_type']?.toString().toLowerCase() ?? 'image';
+    final isVideo = mediaType == 'video';
     final rawUrl = item['url']?.toString();
-    final imageUrl =
-        (hdUrl != null && hdUrl.isNotEmpty) ? hdUrl : (rawUrl ?? '');
+    final thumbnailUrl = item['thumbnail_url']?.toString();
+    final hdUrl = item['hdurl']?.toString();
+    final imageUrl = (isVideo
+            ? (thumbnailUrl ?? rawUrl)
+            : (hdUrl != null && hdUrl.isNotEmpty ? hdUrl : rawUrl)) ??
+        '';
 
     final result = {
       'title': item['title']?.toString() ?? 'Astronomy Picture of the Day',
       'explanation': explanation,
       'date': item['date']?.toString(),
       'copyright': copyright,
-      'media_type': item['media_type']?.toString().toLowerCase() ?? 'image',
+      'media_type': mediaType,
       'url': imageUrl,
+      'thumbnail_url': thumbnailUrl,
+      'video_url': isVideo ? rawUrl : null,
       'hdurl': hdUrl ?? imageUrl,
     };
 

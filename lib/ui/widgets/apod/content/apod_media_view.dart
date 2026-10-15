@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:space_app/models/apod_item.dart';
+import 'package:space_app/ui/widgets/feedback/app_snackbar.dart';
+import 'package:space_app/utils/app_colors.dart';
+import 'package:space_app/utils/app_strings.dart';
 import 'apod_fullscreen_viewer.dart';
 
 class ApodMediaView extends StatelessWidget {
@@ -24,8 +28,21 @@ class ApodMediaView extends StatelessWidget {
         title = item.title,
         isVideo = item.isVideo;
 
-  void _openFullscreen(BuildContext context) {
-    if (isVideo || imageUrl.isEmpty) return;
+  void _handleTap(BuildContext context) {
+    if (isVideo) {
+      final link = videoUrl.isNotEmpty ? videoUrl : imageUrl;
+      if (link.isNotEmpty) {
+        Clipboard.setData(ClipboardData(text: link));
+        AppSnackBar.showSuccess(
+          context,
+          AppStrings.videoLinkCopied,
+          icon: Icons.link,
+        );
+      }
+      return;
+    }
+
+    if (imageUrl.isEmpty) return;
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -40,7 +57,7 @@ class ApodMediaView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => _openFullscreen(context),
+      onTap: () => _handleTap(context),
       child: Stack(
         children: [
           _buildMediaImage(context),
@@ -190,7 +207,7 @@ class _MediaLoadingPlaceholder extends StatelessWidget {
 
     return Container(
       height: 350,
-      color: const Color(0xFF1E1E28),
+      color: AppColors.background,
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -224,7 +241,7 @@ class _MediaErrorPlaceholder extends StatelessWidget {
     return Container(
       height: 350,
       width: double.infinity,
-      color: const Color(0xFF1E1E28),
+      color: AppColors.background,
       child: Center(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -267,7 +284,7 @@ class _EmptyMediaPlaceholder extends StatelessWidget {
     return Container(
       height: 350,
       width: double.infinity,
-      color: const Color(0xFF1E1E28),
+      color: AppColors.background,
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

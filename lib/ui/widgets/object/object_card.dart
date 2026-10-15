@@ -4,9 +4,9 @@ import 'package:space_app/ui/screens/object_detail_screen.dart';
 import 'package:space_app/ui/widgets/object/space_object_builder.dart';
 
 class ObjectCard extends StatelessWidget {
-  final SpaceObject spaceobject;
+  final SpaceObject spaceObject;
 
-  const ObjectCard({super.key, required this.spaceobject});
+  const ObjectCard({super.key, required this.spaceObject});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +15,7 @@ class ObjectCard extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ObjectDetailScreen(spaceobject: spaceobject),
+            builder: (context) => ObjectDetailScreen(spaceObject: spaceObject),
           ),
         );
       },
@@ -30,8 +30,8 @@ class ObjectCard extends StatelessWidget {
           children: [
             Expanded(
               child: SpaceObjectImage(
-                imagePath: spaceobject.imagePath,
-                category: spaceobject.category,
+                imagePath: spaceObject.imagePath,
+                category: spaceObject.category,
               ),
             ),
             Padding(
@@ -40,7 +40,7 @@ class ObjectCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    spaceobject.name,
+                    spaceObject.name,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
@@ -52,9 +52,9 @@ class ObjectCard extends StatelessWidget {
                   SizedBox(
                     height: 36,
                     child: Text(
-                      spaceobject.description.isEmpty
+                      spaceObject.description.isEmpty
                           ? "No description."
-                          : spaceobject.description,
+                          : spaceObject.description,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(

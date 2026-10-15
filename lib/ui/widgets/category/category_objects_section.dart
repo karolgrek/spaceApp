@@ -30,7 +30,7 @@ class CategoryObjectsSection extends StatelessWidget {
           ),
           itemCount: objects.length,
           itemBuilder: (context, gridIndex) {
-            return ObjectCard(spaceobject: objects[gridIndex]);
+            return ObjectCard(spaceObject: objects[gridIndex]);
           },
         ),
       ],

@@ -28,6 +28,7 @@ class DeleteObjectDialog extends ConsumerWidget {
         ),
         TextButton(
           onPressed: () {
+            final messenger = ScaffoldMessenger.of(context);
             ref.read(spaceObjectsProvider.notifier).deleteObject(object.id);
             Navigator.pop(context); // Close dialog
             Navigator.pop(context); // Close detail screen
@@ -36,6 +37,7 @@ class DeleteObjectDialog extends ConsumerWidget {
               context,
               '${object.name} deleted.',
               icon: Icons.delete_outline,
+              messenger: messenger,
             );
           },
           child: const Text("OK", style: TextStyle(color: Colors.red)),

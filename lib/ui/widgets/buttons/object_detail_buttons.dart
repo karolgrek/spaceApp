@@ -4,9 +4,9 @@ import 'package:space_app/ui/screens/add_object_screen.dart';
 import 'package:space_app/ui/widgets/dialogs/delete_object_dialog.dart';
 
 class ObjectActionButtons extends StatelessWidget {
-  final SpaceObject spaceobject;
+  final SpaceObject spaceObject;
 
-  const ObjectActionButtons({super.key, required this.spaceobject});
+  const ObjectActionButtons({super.key, required this.spaceObject});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class ObjectActionButtons extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
-                          AddNewObject(objectToEdit: spaceobject),
+                          AddNewObject(objectToEdit: spaceObject),
                     ),
                   );
                 },
@@ -39,7 +39,7 @@ class ObjectActionButtons extends StatelessWidget {
                   style: TextStyle(color: Colors.white),
                 ),
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                onPressed: () => DeleteObjectDialog.show(context, spaceobject),
+                onPressed: () => DeleteObjectDialog.show(context, spaceObject),
               ),
             ),
           ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:space_app/providers/daily_picture_provider.dart';
+import 'package:space_app/utils/app_colors.dart';
 import 'apod_error_presentation.dart';
 import 'apod_status_layout.dart';
 
@@ -40,7 +41,7 @@ class ApodErrorView extends StatelessWidget {
         icon: const Icon(Icons.refresh),
         label: const Text("Try Again"),
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF3F3D56),
+          backgroundColor: AppColors.actionButton,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 14),
           shape: RoundedRectangleBorder(

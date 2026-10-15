@@ -19,32 +19,42 @@ class CategoryFilterDialog extends ConsumerWidget {
 
     return AlertDialog(
       title: const Text('Filter by Category'),
-      content: SizedBox(
-        width: double.maxFinite,
-        child: ListView.builder(
-          shrinkWrap: true,
-          itemCount: categoriesList.length,
-          itemBuilder: (context, index) {
-            final cat = categoriesList[index];
-            final isChecked = selected.contains(cat);
+      content: ConstrainedBox(
+        constraints: const BoxConstraints(maxHeight: 350),
+        child: SizedBox(
+          width: double.maxFinite,
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: categoriesList.length,
+            itemBuilder: (context, index) {
+              final cat = categoriesList[index];
+              final isChecked = selected.contains(cat);
 
-            return CheckboxListTile(
-              title: Text(cat),
-              value: isChecked,
-              onChanged: (bool? checked) {
-                final newList = List<String>.from(selected);
-                if (checked == true) {
-                  newList.add(cat);
-                } else {
-                  newList.remove(cat);
-                }
-                ref.read(selectedCategoriesProvider.notifier).state = newList;
-              },
-            );
-          },
+              return CheckboxListTile(
+                title: Text(cat),
+                value: isChecked,
+                onChanged: (bool? checked) {
+                  final newList = List<String>.from(selected);
+                  if (checked == true) {
+                    newList.add(cat);
+                  } else {
+                    newList.remove(cat);
+                  }
+                  ref.read(selectedCategoriesProvider.notifier).state = newList;
+                },
+              );
+            },
+          ),
         ),
       ),
       actions: [
+        if (selected.isNotEmpty)
+          TextButton(
+            onPressed: () {
+              ref.read(selectedCategoriesProvider.notifier).state = [];
+            },
+            child: const Text('Clear All'),
+          ),
         TextButton(
           onPressed: () => Navigator.pop(context),
           child: const Text('Done'),

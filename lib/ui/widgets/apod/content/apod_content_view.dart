@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:space_app/models/apod_item.dart';
+import 'package:space_app/utils/app_colors.dart';
 import 'apod_cached_banner.dart';
 import 'apod_explanation_section.dart';
 import 'apod_media_view.dart';
@@ -59,7 +60,7 @@ class ApodContentView extends StatelessWidget {
                   copyright: item.copyright,
                 ),
                 const SizedBox(height: 16),
-                const Divider(color: Color(0xFF2A2A35)),
+                const Divider(color: AppColors.divider),
                 const SizedBox(height: 8),
                 ApodExplanationSection(explanation: item.explanation),
                 const SizedBox(height: 24),

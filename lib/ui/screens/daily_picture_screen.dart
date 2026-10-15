@@ -5,6 +5,7 @@ import 'package:space_app/ui/widgets/apod/content/apod_content_view.dart';
 import 'package:space_app/ui/widgets/apod/status/apod_error_view.dart';
 import 'package:space_app/ui/widgets/apod/status/apod_offline_view.dart';
 import 'package:space_app/ui/widgets/feedback/app_snackbar.dart';
+import 'package:space_app/utils/app_strings.dart';
 
 class DailyPictureScreen extends ConsumerStatefulWidget {
   const DailyPictureScreen({super.key});
@@ -32,7 +33,7 @@ class _DailyPictureScreenState extends ConsumerState<DailyPictureScreen> {
       if (mounted) {
         AppSnackBar.showSuccess(
           context,
-          "Picture of the Day updated successfully!",
+          AppStrings.apodUpdatedSuccess,
         );
       }
     } catch (e) {
@@ -40,13 +41,13 @@ class _DailyPictureScreenState extends ConsumerState<DailyPictureScreen> {
         if (e is ApodException && e.hasCache) {
           AppSnackBar.showWarning(
             context,
-            'Could not connect to NASA. You can view the saved picture below.',
+            AppStrings.couldNotConnectToNasaNotice,
             icon: Icons.cloud_off_rounded,
           );
         } else {
           final message = e is ApodException
               ? e.userFriendlyMessage
-              : 'Could not refresh Picture of the Day.';
+              : AppStrings.couldNotRefreshApod;
           AppSnackBar.showError(
             context,
             message,
@@ -71,11 +72,11 @@ class _DailyPictureScreenState extends ConsumerState<DailyPictureScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Astronomy Picture of the Day"),
+        title: const Text(AppStrings.apodTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            tooltip: "Refresh",
+            tooltip: AppStrings.retry,
             onPressed: _refresh,
           ),
         ],
@@ -126,7 +127,7 @@ class _LoadingView extends StatelessWidget {
             const CircularProgressIndicator(strokeWidth: 3),
             const SizedBox(height: 20),
             const Text(
-              "Connecting to NASA server...",
+              AppStrings.connectingToNasa,
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
@@ -134,7 +135,7 @@ class _LoadingView extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              "Downloading Astronomy Picture of the Day",
+              AppStrings.downloadingApod,
               style: TextStyle(fontSize: 13, color: Colors.grey[400]),
             ),
           ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:space_app/utils/app_colors.dart';
 
 class ApodMetadataSection extends StatelessWidget {
   final String? date;
@@ -19,7 +20,7 @@ class ApodMetadataSection extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
-              color: const Color(0xFF2A2A35),
+              color: AppColors.cardSecondary,
               borderRadius: BorderRadius.circular(10),
             ),
             child: Row(
@@ -40,7 +41,7 @@ class ApodMetadataSection extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
-              color: const Color(0xFF2A2A35),
+              color: AppColors.cardSecondary,
               borderRadius: BorderRadius.circular(10),
             ),
             child: Row(

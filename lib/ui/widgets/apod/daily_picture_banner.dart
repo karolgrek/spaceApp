@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:space_app/models/apod_item.dart';
 import 'package:space_app/providers/daily_picture_provider.dart';
 import 'package:space_app/ui/screens/daily_picture_screen.dart';
+import 'package:space_app/utils/app_colors.dart';
 
 class DailyPictureBanner extends ConsumerWidget {
   const DailyPictureBanner({super.key});
@@ -50,7 +51,7 @@ class DailyPictureBanner extends ConsumerWidget {
   Widget _buildBackground(_BannerInfo info) {
     if (info.isLoading) {
       return Container(
-        color: const Color(0xFF1E1E28),
+        color: AppColors.background,
         child: const Center(
           child: SizedBox(
             width: 24,
