@@ -177,5 +177,43 @@ void main() {
       expect(box.get('c_2'), isNull);
       expect(box.get('c_3'), isNotNull);
     });
+
+    test('toggleFavorite toggles isFavorite status in state and Hive box', () {
+      final notifier = container.read(spaceObjectsProvider.notifier);
+      final obj = SpaceObject(
+        id: 'fav_1',
+        name: 'Venus',
+        category: 'Planet',
+        description: 'Morning star',
+        imagePath: '',
+        notes: '',
+        isFavorite: false,
+      );
+      notifier.addObject(obj);
+
+      // Toggle ON
+      final resultOn = notifier.toggleFavorite('fav_1');
+      expect(resultOn, isTrue);
+
+      final stateOn = container.read(spaceObjectsProvider);
+      expect(stateOn.firstWhere((o) => o.id == 'fav_1').isFavorite, isTrue);
+
+      final box = Hive.box<SpaceObject>('space_objects');
+      expect(box.get('fav_1')!.isFavorite, isTrue);
+
+      // Toggle OFF
+      final resultOff = notifier.toggleFavorite('fav_1');
+      expect(resultOff, isFalse);
+
+      final stateOff = container.read(spaceObjectsProvider);
+      expect(stateOff.firstWhere((o) => o.id == 'fav_1').isFavorite, isFalse);
+      expect(box.get('fav_1')!.isFavorite, isFalse);
+    });
+
+    test('toggleFavorite on non-existent ID returns false', () {
+      final notifier = container.read(spaceObjectsProvider.notifier);
+      final result = notifier.toggleFavorite('does_not_exist');
+      expect(result, isFalse);
+    });
   });
 }
