@@ -33,7 +33,7 @@ The app features a sleek cosmic dark mode with an animated twinkling starfield b
 | Home Screen | Astronomy Picture of the Day (APOD) |
 | :---: | :---: |
 | ![Home Screen](docs/screenshots/home_screen.png) | ![APOD Screen](docs/screenshots/apod_screen.png) |
-| *Celestial catalog, APOD banner, and quick search* | *High-definition imagery and scientific explanation* |
+| *Celestial catalog with favorite badges, APOD banner, and search* | *High-definition imagery, scientific explanation, and one-tap gallery download* |
 
 ---
 
@@ -41,7 +41,7 @@ The app features a sleek cosmic dark mode with an animated twinkling starfield b
 | Celestial Object Detail | Category Filter |
 | :---: | :---: |
 | ![Object Detail Screen](docs/screenshots/object_detail_screen.png) | ![Filter Dialog](docs/screenshots/filter_dialog.png) |
-| *Object visual, description, personal notes, and actions* | *Fast multi-select category filtering* |
+| *Object visual, favorite heart toggle, description, and notes* | *Fast multi-select category and dedicated Favorites filtering* |
 
 ---
 
@@ -59,15 +59,17 @@ The app features a sleek cosmic dark mode with an animated twinkling starfield b
   - Automatically fetches the latest picture of the day and scientific explanation from the official NASA API.
   - Supports both high-resolution (HD) images and embedded videos.
   - **Offline First**: The latest successfully downloaded photo and explanation are securely cached in a local Hive database, ensuring content remains accessible offline with an informative status badge.
+  - 📥 **One-Tap Gallery Download**: Directly save stunning APOD space imagery to your native photo gallery (`Downloads/` fallback) with smooth reactive status feedback (*Download* ➔ *Downloading...* ➔ *Saved*).
   - Supports manual refresh (pull-to-refresh or reload button).
 
 - 🌌 **Celestial Object Catalog & Journal**:
   - Categorized grouping of objects (Stars, Planets, Galaxies, Comets, Black Holes, Moons, Satellites, and custom categories).
   - Every entry includes a title, photo or custom illustration, short overview on the home screen, and comprehensive personal notes.
+  - ❤️ **Favorites System**: Instantly mark celestial objects as favorites with an interactive heart toggle in the detail view, visual heart badges on catalog cards, and a top-level Favorites filter with intelligent auto-reset safety.
 
 - 🔎 **Instant Search & Filtering**:
   - Real-time full-text search directly on the home screen.
-  - Multi-select category filter dialog with an active filter count indicator.
+  - Multi-select category filter dialog with active filter count badge and dedicated Favorites filtering.
 
 - 📝 **Full CRUD Management**:
   - Add new celestial objects with support for uploading images from the device gallery using `image_picker`.
@@ -76,7 +78,10 @@ The app features a sleek cosmic dark mode with an animated twinkling starfield b
 
 - 🏷️ **Custom Categories**:
   - Add custom categories on the fly while creating an object or through the settings drawer (e.g., *Exoplanet*, *Nebula*, *Space Probe*).
-  - Dedicated screen to manage and delete custom categories.
+  - Dedicated screen to manage and delete custom categories with duplicate and case-insensitive protection.
+
+- 🧪 **Comprehensive Test Coverage**:
+  - Robust test suite with **34 automated unit and widget tests** covering Riverpod providers, UI screen transitions, offline caching, and favorites filtering edge cases.
 
 - ✨ **Premium Cosmic Aesthetics**:
   - Dynamic twinkling starfield with procedurally generated pulsating stars (`StarryBackground`).
